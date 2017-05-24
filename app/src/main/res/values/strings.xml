@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Hush</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="welcome">Ultrasound Proximity Networking Modem</string>
+    <string name="clear">Clear Recordings</string>
+    <string name="record">Record</string>
+    <string name="stop">Stop</string>
+    <string name="TestFFT">TestFFT</string>
+    <string name="test_rand">Test with Random Input</string>
+    <string name="test_static">Test with Known Input / Output</string>
+
+    <!-- Content Descriptions -->
+    <string name="home_screen">Speaker and Microphone with waveform</string>
+    <string name="title_activity_user_study">UserStudy</string>
+    <string name="title_activity_test_energy">TestEnergy</string>
+    <string name="title_activity_bluetooth_device_selector">BluetoothDeviceSelector</string>
+    <string name="title_activity_test_energy_server">TestEnergyServer</string>
+
+</resources>

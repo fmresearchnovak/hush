@@ -1,0 +1,25 @@
+
+<LinearLayout 
+       xmlns:android="http://schemas.android.com/apk/res/android"
+       android:id="@+id/ll_begin"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical" >
+       
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_margin="10dp"
+        android:textSize="30dp"
+        android:text="User Study" />
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_margin="10dp"
+        android:text="Thank you for performing my user study. The results of these tests have been emailed anonymously to Ed Novak (ejnovak@email.wm.edu)." />
+    
+</LinearLayout>
+	   

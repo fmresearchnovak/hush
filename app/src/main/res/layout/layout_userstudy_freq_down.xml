@@ -1,0 +1,33 @@
+<LinearLayout
+       xmlns:android="http://schemas.android.com/apk/res/android"
+       android:id="@+id/ll_down"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:orientation="vertical" >
+       
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_margin="10dp"
+        android:text="In this test we will generate a solid tone that will go down in frequency.  At the beginning it should not be audible.  Touch anywhere in the green area as soon as you can hear the sound." />
+   
+    <Button android:id="@+id/testButt"
+        android:layout_gravity="center"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Start Test"
+        android:onClick="startFreqDown" />
+    
+    <LinearLayout
+        android:background="#36ff00"
+        android:layout_margin="1dp"
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:onClick="stopTest">
+        
+    </LinearLayout>
+    
+</LinearLayout>
+   

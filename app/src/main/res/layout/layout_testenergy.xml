@@ -1,0 +1,268 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <TextView 
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:textSize="25sp"
+	        android:layout_margin="10dp"
+	        android:layout_gravity="center"
+	        android:text="Test Energy Consumption" />
+        
+	    <LinearLayout 
+	        android:orientation="vertical"
+	        android:background="#bdbdbd"
+	        android:layout_margin="10dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	        
+   	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="WiFi Direct Test" />
+	        
+	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Send Data Using WiFi Direct / P2P" />
+	        
+	        <EditText android:id="@+id/wifiDirectSize"
+	        	android:layout_width="fill_parent"
+	        	android:layout_height="wrap_content"
+	        	android:maxLength="15"
+	       		android:inputType="number"
+	       		android:hint="Number Of Bits To Transmit"
+	       		android:text="8000000" />
+	        
+	        <LinearLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" >
+
+		       	<Button 
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:text="Run Test"
+		        	android:onClick="wifiDirectTest" />
+		       	
+		       	<TextView android:id="@+id/wifiDirectTrans"
+		       	    android:layout_width="wrap_content"
+		       	    android:layout_height="wrap_content"
+		       	    android:layout_marginLeft="20dp"
+		       	    android:textStyle="italic"
+		       	    android:text="Transmitting..."
+		       	    android:visibility="invisible" />
+		  	</LinearLayout>
+	            
+	    </LinearLayout>
+    
+	    <LinearLayout 
+	        android:orientation="vertical"
+	        android:background="#bdbdbd"
+	        android:layout_margin="10dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	        
+   	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="WiFi Test" />
+	        
+	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Send Data Over WiFi" />
+	        
+	        <EditText android:id="@+id/wifiSize"
+	        	android:layout_width="fill_parent"
+	        	android:layout_height="wrap_content"
+	        	android:maxLength="15"
+	       		android:inputType="number"
+	       		android:hint="Number Of Bits To Transmit"
+	       		android:text="8000000" />
+	        
+	        <LinearLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" >
+
+		       	<Button 
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:text="Run Test"
+		        	android:onClick="wifiTest" />
+		       	
+		       	<TextView android:id="@+id/wifiTrans"
+		       	    android:layout_width="wrap_content"
+		       	    android:layout_height="wrap_content"
+		       	    android:layout_marginLeft="20dp"
+		       	    android:textStyle="italic"
+		       	    android:text="Transmitting..."
+		       	    android:visibility="invisible" />
+		  	</LinearLayout>
+	            
+	    </LinearLayout>
+	    
+	   	    <LinearLayout 
+	        android:orientation="vertical"
+	        android:background="#bdbdbd"
+	        android:layout_margin="10dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	        
+   	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="3G/4G Test" />
+	        
+	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Send Data Over 3G/4G" />
+	        
+	        <EditText android:id="@+id/dataSize"
+	        	android:layout_width="fill_parent"
+	        	android:layout_height="wrap_content"
+	        	android:maxLength="15"
+	       		android:inputType="number"
+	       		android:hint="Number Of Bits To Transmit"
+	       		android:text="8000000" />
+	        
+	        <LinearLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" >
+
+		       	<Button 
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:text="Run Test"
+		        	android:onClick="dataTest" />
+		       	
+		       	<TextView android:id="@+id/dataTrans"
+		       	    android:layout_width="wrap_content"
+		       	    android:layout_height="wrap_content"
+		       	    android:layout_marginLeft="20dp"
+		       	    android:textStyle="italic"
+		       	    android:text="Transmitting..."
+		       	    android:visibility="invisible" />
+		  	</LinearLayout>
+	            
+	    </LinearLayout>
+	    
+		<LinearLayout 
+	        android:orientation="vertical"
+	        android:background="#bdbdbd"
+	        android:layout_margin="10dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	        
+   	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="BlueTooth Test" />
+	        
+	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Send Data Over BT" />
+	        
+	        <EditText android:id="@+id/btSize"
+	        	android:layout_width="fill_parent"
+	        	android:layout_height="wrap_content"
+	        	android:maxLength="15"
+	       		android:inputType="number"
+	       		android:hint="Number Of Bits To Transmit"
+	       		android:text="8000000" />
+	        
+	        <LinearLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" >
+
+		       	<Button 
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:text="Run Test"
+		        	android:onClick="btTest" />
+		       	
+		       	<TextView android:id="@+id/btTrans"
+		       	    android:layout_width="wrap_content"
+		       	    android:layout_height="wrap_content"
+		       	    android:layout_marginLeft="20dp"
+		       	    android:textStyle="italic"
+		       	    android:text="Transmitting..."
+		       	    android:visibility="invisible" />
+		  	</LinearLayout>
+	            
+	    </LinearLayout>
+	    
+		<LinearLayout 
+	        android:orientation="vertical"
+	        android:background="#bdbdbd"
+	        android:layout_margin="10dp"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content" >
+	        
+   	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="NFC Test" />
+	        
+	        <TextView
+	            android:layout_gravity="center"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="Send Data Over NFC" />
+	        
+	        <EditText android:id="@+id/nfcSize"
+	        	android:layout_width="fill_parent"
+	        	android:layout_height="wrap_content"
+	        	android:maxLength="15"
+	       		android:inputType="number"
+	       		android:hint="Number Of Bits To Transmit"
+	       		android:text="8000000" />
+	        
+	        <LinearLayout 
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:orientation="horizontal" >
+
+		       	<Button 
+		        	android:layout_width="wrap_content"
+		        	android:layout_height="wrap_content"
+		        	android:text="Run Test"
+		        	android:onClick="nfcTest" />
+		       	
+		       	<TextView android:id="@+id/nfcTrans"
+		       	    android:layout_width="wrap_content"
+		       	    android:layout_height="wrap_content"
+		       	    android:layout_marginLeft="20dp"
+		       	    android:textStyle="italic"
+		       	    android:text="Transmitting..."
+		       	    android:visibility="invisible" />
+		  	</LinearLayout>
+	            
+	    </LinearLayout>
+	    
+    </LinearLayout>
+
+</ScrollView>

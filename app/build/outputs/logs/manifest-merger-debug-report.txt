@@ -1,0 +1,175 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:2:1-65:12
+	package
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:3:5-37
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+	android:versionName
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:5:5-30
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+	android:versionCode
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:4:5-28
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:2:11-69
+uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:7:5-81
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:7:22-78
+uses-permission#android.permission.RECORD_AUDIO
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:8:5-71
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:8:22-68
+uses-permission#android.permission.MODIFY_AUDIO_SETTINGS
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:9:5-80
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:9:22-77
+uses-permission#android.permission.INTERNET
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:10:5-67
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:10:22-64
+uses-permission#android.permission.ACCESS_NETWORK_STATE
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:11:5-79
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:11:22-76
+uses-permission#android.permission.ACCESS_WIFI_STATE
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:12:5-76
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:12:22-73
+uses-permission#android.permission.CHANGE_WIFI_STATE
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:13:5-76
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:13:22-73
+uses-permission#android.permission.BLUETOOTH
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:14:5-68
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:14:22-65
+uses-permission#android.permission.NFC
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:15:5-61
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:15:22-59
+uses-sdk
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:17:5-19:41
+MERGED from [com.android.support:appcompat-v7:25.3.1] /Users/enovak/.android/build-cache/e2420b3454a17995111f57a7d1cda0c1ef38be8e/output/AndroidManifest.xml:21:5-23:78
+MERGED from [com.android.support:support-v4:25.3.1] /Users/enovak/.android/build-cache/70d06cbfe3fe6ccb69e9d2d5cf7355c9ee00a342/output/AndroidManifest.xml:21:5-23:54
+MERGED from [com.android.support:support-fragment:25.3.1] /Users/enovak/.android/build-cache/331488c976f0dedb76dc3b99f2cdd51a6f6fb8b5/output/AndroidManifest.xml:21:5-23:60
+MERGED from [com.android.support:support-media-compat:25.3.1] /Users/enovak/.android/build-cache/e131464047d44363850b9336388e86f49adf360f/output/AndroidManifest.xml:21:5-23:63
+MERGED from [com.android.support:support-core-ui:25.3.1] /Users/enovak/.android/build-cache/383324c5d98f0789d42f7cf3cbe6b5efe52ca846/output/AndroidManifest.xml:21:5-23:58
+MERGED from [com.android.support:support-core-utils:25.3.1] /Users/enovak/.android/build-cache/17e2e0150bf8e8be470b9902150e97a5693f49f7/output/AndroidManifest.xml:21:5-23:61
+MERGED from [com.android.support:animated-vector-drawable:25.3.1] /Users/enovak/.android/build-cache/9b3747246527a057c62925147672738bfc8f75b5/output/AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:25.3.1] /Users/enovak/.android/build-cache/96f3579997f1a01148096928fed6af59ebce08fb/output/AndroidManifest.xml:20:5-43
+MERGED from [com.android.support:support-compat:25.3.1] /Users/enovak/.android/build-cache/58a3b60cbbb49eda2856819aa76bccfc1d212d37/output/AndroidManifest.xml:21:5-23:58
+	tools:overrideLibrary
+		ADDED from [com.android.support:appcompat-v7:25.3.1] /Users/enovak/.android/build-cache/e2420b3454a17995111f57a7d1cda0c1ef38be8e/output/AndroidManifest.xml:23:9-75
+	android:targetSdkVersion
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:19:9-38
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:18:9-35
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml
+application
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:21:5-63:19
+MERGED from [com.android.support:appcompat-v7:25.3.1] /Users/enovak/.android/build-cache/e2420b3454a17995111f57a7d1cda0c1ef38be8e/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-v4:25.3.1] /Users/enovak/.android/build-cache/70d06cbfe3fe6ccb69e9d2d5cf7355c9ee00a342/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-fragment:25.3.1] /Users/enovak/.android/build-cache/331488c976f0dedb76dc3b99f2cdd51a6f6fb8b5/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-media-compat:25.3.1] /Users/enovak/.android/build-cache/e131464047d44363850b9336388e86f49adf360f/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-ui:25.3.1] /Users/enovak/.android/build-cache/383324c5d98f0789d42f7cf3cbe6b5efe52ca846/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:support-core-utils:25.3.1] /Users/enovak/.android/build-cache/17e2e0150bf8e8be470b9902150e97a5693f49f7/output/AndroidManifest.xml:29:5-20
+MERGED from [com.android.support:animated-vector-drawable:25.3.1] /Users/enovak/.android/build-cache/9b3747246527a057c62925147672738bfc8f75b5/output/AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-vector-drawable:25.3.1] /Users/enovak/.android/build-cache/96f3579997f1a01148096928fed6af59ebce08fb/output/AndroidManifest.xml:26:5-20
+MERGED from [com.android.support:support-compat:25.3.1] /Users/enovak/.android/build-cache/58a3b60cbbb49eda2856819aa76bccfc1d212d37/output/AndroidManifest.xml:29:5-20
+	android:label
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:24:9-41
+	android:allowBackup
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:22:9-35
+	android:icon
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:23:9-45
+	android:theme
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:25:9-40
+activity#net.ednovak.ultrasound.Home
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:26:9-35:20
+	android:screenOrientation
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:29:13-49
+	android:label
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:28:13-45
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:27:13-55
+intent-filter#android.intent.action.MAIN+android.intent.category.LAUNCHER
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:30:13-34:29
+action#android.intent.action.MAIN
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:31:17-69
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:31:25-66
+category#android.intent.category.LAUNCHER
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:33:17-77
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:33:27-74
+activity#net.ednovak.ultrasound.Send
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:36:9-38:52
+	android:screenOrientation
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:38:13-49
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:37:13-55
+activity#net.ednovak.ultrasound.UserStudy
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:39:9-42:52
+	android:screenOrientation
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:42:13-49
+	android:label
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:41:13-62
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:40:13-60
+activity#net.ednovak.ultrasound.TestEnergy
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:43:9-46:20
+	android:label
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:45:13-63
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:44:13-61
+activity#net.ednovak.ultrasound.ItemSelector
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:47:9-50:20
+	android:label
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:49:13-77
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:48:13-63
+activity#net.ednovak.ultrasound.TestEnergyServer
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:51:9-62:20
+	android:label
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:53:13-70
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:52:13-67
+intent-filter#android.intent.category.DEFAULT+android.nfc.action.NDEF_DISCOVERED
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:54:13-60:20
+action#android.nfc.action.NDEF_DISCOVERED
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:55:8-67
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:55:16-65
+category#android.intent.category.DEFAULT
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:56:8-66
+	android:name
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:56:18-64
+data
+ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:57:8-59:68
+	android:host
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:58:12-30
+	android:scheme
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:57:14-46
+	android:pathPrefix
+		ADDED from /Users/enovak/AndroidStudioProjects/Ultrasound/app/src/main/AndroidManifest.xml:59:12-66
+meta-data#android.support.VERSION
+ADDED from [com.android.support:appcompat-v7:25.3.1] /Users/enovak/.android/build-cache/e2420b3454a17995111f57a7d1cda0c1ef38be8e/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-v4:25.3.1] /Users/enovak/.android/build-cache/70d06cbfe3fe6ccb69e9d2d5cf7355c9ee00a342/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-fragment:25.3.1] /Users/enovak/.android/build-cache/331488c976f0dedb76dc3b99f2cdd51a6f6fb8b5/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-media-compat:25.3.1] /Users/enovak/.android/build-cache/e131464047d44363850b9336388e86f49adf360f/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-core-ui:25.3.1] /Users/enovak/.android/build-cache/383324c5d98f0789d42f7cf3cbe6b5efe52ca846/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:support-core-utils:25.3.1] /Users/enovak/.android/build-cache/17e2e0150bf8e8be470b9902150e97a5693f49f7/output/AndroidManifest.xml:25:5-27:34
+MERGED from [com.android.support:animated-vector-drawable:25.3.1] /Users/enovak/.android/build-cache/9b3747246527a057c62925147672738bfc8f75b5/output/AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:support-vector-drawable:25.3.1] /Users/enovak/.android/build-cache/96f3579997f1a01148096928fed6af59ebce08fb/output/AndroidManifest.xml:22:5-24:34
+MERGED from [com.android.support:support-compat:25.3.1] /Users/enovak/.android/build-cache/58a3b60cbbb49eda2856819aa76bccfc1d212d37/output/AndroidManifest.xml:25:5-27:34
+	android:value
+		ADDED from [com.android.support:appcompat-v7:25.3.1] /Users/enovak/.android/build-cache/e2420b3454a17995111f57a7d1cda0c1ef38be8e/output/AndroidManifest.xml:27:9-31
+	android:name
+		ADDED from [com.android.support:appcompat-v7:25.3.1] /Users/enovak/.android/build-cache/e2420b3454a17995111f57a7d1cda0c1ef38be8e/output/AndroidManifest.xml:26:9-47

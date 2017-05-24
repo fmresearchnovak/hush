@@ -1,0 +1,102 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+    
+	<LinearLayout 
+    	android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:background="#ababab"
+    	android:padding="5dp"
+    	android:orientation="vertical">
+	    
+      	<TextView android:id="@+id/main_tv_header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Number Of Bits" />
+	    
+		<EditText android:id="@+id/data"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	       	android:inputType="number" />      
+	    
+	</LinearLayout>
+
+    <RadioGroup android:id="@+id/radio_group"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="left" >
+    
+	    <RadioButton
+	        android:id="@+id/radio_msg"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="5dp"
+	        android:text="Text Message" />
+	    
+	    <RadioButton
+	        android:id="@+id/radio_rand"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="5dp"
+	        android:text="Random Data" />
+
+		<RadioButton android:id="@+id/radio_debug"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:text="Debug Data" />
+
+		<RadioButton android:id="@+id/radio_debug_long"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_margin="5dp"
+			android:text="Long Debug Data" />
+    </RadioGroup>
+    
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:background="#0b9800"
+	    android:gravity="center"
+	    android:orientation="horizontal">
+	    
+	    <Button android:id="@+id/genFrame"
+			android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+	        android:layout_margin="5dp"
+	        android:text="Generate Signal"
+	        android:onClick="genPacket" />
+    
+	    <Button android:id="@+id/play"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="5dp"
+	        android:text="Send"
+	        android:onClick="playAudio" />
+	    
+	</LinearLayout>
+
+	<TextView android:id="@+id/send_tv_cur_mode"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textStyle="italic"
+        android:layout_margin="2dp"
+		android:text="mode: unknown"
+		android:layout_marginBottom="5dp" />
+	
+	<ProgressBar android:id="@+id/send_pb_playing"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:max="100"
+        android:visibility="invisible"/>
+    
+</LinearLayout>
+</ScrollView>

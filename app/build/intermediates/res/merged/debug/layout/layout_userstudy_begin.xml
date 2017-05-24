@@ -1,0 +1,45 @@
+
+<LinearLayout 
+       xmlns:android="http://schemas.android.com/apk/res/android"
+       android:id="@+id/ll_begin"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:orientation="vertical" >
+       
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_margin="10dp"
+        android:textSize="30dp"
+        android:text="User Study" />
+    
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_margin="10dp"
+        android:text="Thank you for performing my user study.  There are only three phases.  The first phase measures the frequency threshold of your hearing by sweeping up from 10kHz to 21kHz.  The second measures your frequency threshold by sweeping down from 21kHz to 10kHz.  The third measures the audibility of an ultrasonic audio modem.  Please do not adjust the volume throughout the experiments.  The results of these tests will be emailed to Ed Novak (ejnovak@email.wm.edu)." />
+    
+    <EditText android:id="@+id/age"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="left"
+        android:layout_margin="10dp"
+        android:hint="What is your age?"
+        android:inputType="number"
+        android:maxLength="3" />
+   
+    <Button 
+        android:layout_gravity="center"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Begin Test"
+        android:onClick="begin" />
+    
+
+   
+    
+</LinearLayout>
+	   
