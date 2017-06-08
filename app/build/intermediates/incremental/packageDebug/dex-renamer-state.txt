@@ -1,7 +1,0 @@
-#Wed May 24 11:15:59 EDT 2017
-base.0=/Users/enovak/AndroidStudioProjects/Ultrasound/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_dcada7fb9f3e997ccd02db7382ebd66de048f65b
-renamed.1=classes.dex
-renamed.0=classes2.dex
-file.1=/Users/enovak/AndroidStudioProjects/Ultrasound/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_a39ccb693b23273c61b2ad52ccf0cea275337a46/classes.dex
-base.1=/Users/enovak/AndroidStudioProjects/Ultrasound/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run_a39ccb693b23273c61b2ad52ccf0cea275337a46
-file.0=/Users/enovak/AndroidStudioProjects/Ultrasound/app/build/intermediates/transforms/dex/debug/folders/1000/10000/instant-run-bootstrap_dcada7fb9f3e997ccd02db7382ebd66de048f65b/classes.dex

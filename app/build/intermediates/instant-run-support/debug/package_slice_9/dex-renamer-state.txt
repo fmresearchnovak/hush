@@ -1,4 +1,0 @@
-#Fri May 12 14:53:55 EDT 2017
-base.0=/Users/enovak/AndroidStudioProjects/Ultrasound/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_9
-renamed.0=classes.dex
-file.0=/Users/enovak/AndroidStudioProjects/Ultrasound/app/build/intermediates/transforms/dex/debug/folders/1000/5/slice_9/classes.dex
