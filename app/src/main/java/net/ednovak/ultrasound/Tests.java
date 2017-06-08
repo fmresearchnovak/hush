@@ -21,7 +21,6 @@ public final class Tests {
     //private final static float[] testAns = {-17397, -67409, 22616, 42880, 33087, 33868, 54264, -4358, 67410, 0, 54624, 4358, 33087, 33868, 22616, 42880};
 
 
-
     public static void playRecWindowHail(){
         short[] tmp = new short[Library.HAIL_SIZE];
 
@@ -291,5 +290,9 @@ public final class Tests {
         SubCarrier sc = new SubCarrier(17528.02734375, 5.12, 1);
         Log.d(TAG, "vPhase at idx+1: " +  sc.calcVirtualPhase(1));
 
+    }
+
+    public static void printTest(){
+        Log.d(TAG, "This is just a test!");
     }
 }
