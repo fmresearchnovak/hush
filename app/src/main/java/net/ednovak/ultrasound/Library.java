@@ -582,13 +582,23 @@ public class Library {
     // for example: a message of 304 = 2 frames of (152 data + 8 sField) = 320 bits = 160 * 2
     // How can we identify the final frame?
     // Naively: send a third frame with 0 bits stored in it.
-    public static String genSizeField(Integer val){
+    public static String genSizeField(Integer val, int mode){
         String binary = Integer.toBinaryString(val);
-        if(binary.length() <= 10){
-            binary = String.format("%10s", binary).replace(' ', '0');
-        } else {
-            throw new IllegalArgumentException("Cannot represent using 10 bits.    val: " + val);
+
+        int maxL = 0;
+        if(mode == MODE_SHORT){
+            maxL = 10;
+        } else if (mode == MODE_LONG){
+            maxL = 3;
         }
+
+        if (binary.length() <= maxL) {
+            String fmt = "%" + maxL + "s";
+            binary = String.format(fmt, binary).replace(' ', '0');
+        } else {
+            throw new IllegalArgumentException("Cannot represent this value (" + val + ") using " + maxL + " bits.");
+        }
+
         return binary;
     }
 

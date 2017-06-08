@@ -222,7 +222,7 @@ public final class Tests {
         String bitsP = unzipped[1];
 
         // unzip ground truth
-        String gndTruth = Library.genSizeField(458) + Library.getRandomBits(458); // Just assume it's this one for now
+        String gndTruth = Library.genSizeField(458, Library.MODE_LONG) + Library.getRandomBits(458); // Just assume it's this one for now
         String[] gndUnzipped = unzip(gndTruth);
         String gndA = gndUnzipped[0];
         String gndP = gndUnzipped[1];

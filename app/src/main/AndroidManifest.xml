@@ -2,7 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.ednovak.ultrasound"
     android:versionCode="1"
-    android:versionName="1.0" >
+    android:versionName="1.0">
+
+    <uses-sdk
+        android:minSdkVersion="15"
+        android:targetSdkVersion="25" />
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -12,21 +16,18 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
-    <uses-permission android:name="android.permission.NFC"/>
-
-    <uses-sdk
-        android:minSdkVersion="15"
-        android:targetSdkVersion="25" />
+    <uses-permission android:name="android.permission.NFC" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
-            android:name="net.ednovak.ultrasound.Home"
+            android:name=".Home"
             android:label="@string/app_name"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,31 +35,31 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="net.ednovak.ultrasound.Send"
+            android:name=".Send"
             android:screenOrientation="portrait" />
         <activity
-            android:name="net.ednovak.ultrasound.UserStudy"
+            android:name=".UserStudy"
             android:label="@string/title_activity_user_study"
             android:screenOrientation="portrait" />
         <activity
-            android:name="net.ednovak.ultrasound.TestEnergy"
-            android:label="@string/title_activity_test_energy" >
-        </activity>
+            android:name=".TestEnergy"
+            android:label="@string/title_activity_test_energy"></activity>
         <activity
-            android:name="net.ednovak.ultrasound.ItemSelector"
-            android:label="@string/title_activity_bluetooth_device_selector" >
-        </activity>
+            android:name=".ItemSelector"
+            android:label="@string/title_activity_bluetooth_device_selector"></activity>
         <activity
-            android:name="net.ednovak.ultrasound.TestEnergyServer"
-            android:label="@string/title_activity_test_energy_server" >
+            android:name=".TestEnergyServer"
+            android:label="@string/title_activity_test_energy_server">
             <intent-filter>
-    			<action android:name="android.nfc.action.NDEF_DISCOVERED"/>
-    			<category android:name="android.intent.category.DEFAULT"/>
-    			<data android:scheme="vnd.android.nfc"
-    			    android:host="ext"
-    			    android:pathPrefix="/net.ednovak.ultrasound:randbytes"/>
-			</intent-filter>
-			
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="ext"
+                    android:pathPrefix="/net.ednovak.ultrasound:randbytes"
+                    android:scheme="vnd.android.nfc" />
+            </intent-filter>
         </activity>
     </application>
 

@@ -261,8 +261,8 @@ public class Send extends AppCompatActivity {
         }
 
 
-        // Add the extra 8 size field bits
-        String sField = Library.genSizeField(bitString.length());
+        // Add the extra size field bits
+        String sField = Library.genSizeField(bitString.length(), mode);
         Log.d(TAG, "sField    : " + sField);
         Log.d(TAG, "data      : " + bitString);
         bitString = sField + bitString;
@@ -288,7 +288,7 @@ public class Send extends AppCompatActivity {
         // *** Data <-> Sub-Carrier Mapping *** \\
         //
         // (what amp, and phase for each sub-carrier)
-        // This loop assumes.  There are 80 sub-carriers
+        // This loop assumes that there are 80 sub-carriers
         // 2 of which are used for calibration
         // String binary includes amp and phase bits, the protocol interleaves them
         ArrayList<SubCarrier> map = new ArrayList<SubCarrier>(80);
@@ -302,6 +302,8 @@ public class Send extends AppCompatActivity {
                 map.add(freq);
                 curF += Library.SubCarrier_DELTA;
             }
+            // Fancy ternary operator
+            // x == y ? a : b  --MEANS-->   If x == y output a otherwise, output b.
             amp = binary.charAt(i*2) == '1' ? Library.AMP_HIGH : Library.AMP_LOW;
             phase = binary.charAt((i*2)+1) == '1' ? Math.PI : 0;
 
@@ -315,7 +317,30 @@ public class Send extends AppCompatActivity {
 
 
     private ArrayList<SubCarrier> genFrameMapLong(String binary){
-        return new ArrayList<SubCarrier>(0);
+        // Each data frame in the long range version should encode 10 bits
+        assert(binary.length() == 10);
+
+        // There is only one frame / packet in this version.  So, the
+        // first frame / the packet encodes 3 size field bits and 7 data bits.
+        // Among the 7 data bits I plan to use 3 hamming code bits and 4 data bits
+        ArrayList<SubCarrier> map = new ArrayList<SubCarrier>(10);
+        double curF = Library.findStartingF();
+        double amp;
+        double phase = 0;
+        for(int i = 0; i < binary.length(); i++){
+            amp = binary.charAt(i) == '1' ? Library.AMP_HIGH : Library.AMP_LOW;
+            Log.d(TAG, "f: " + String.format("%.3f", curF) + "   amp: " + amp + "   phase: " + phase);
+            SubCarrier freq = new SubCarrier(curF, phase, amp);
+            map.add(freq);
+            curF += (Library.SubCarrier_DELTA * 2.0); // Every other sub-carrier to help distinguish
+        }
+
+        // Add the calibration sub-carrier 18648 (same as Carrier 1 in short-range / normal mode)
+        Log.d(TAG, "f: " + SubCarrier.CAL_1_FREQ + "   amp: " + 1 + "   phase: " + 0);
+        CalibrationSubCarrier csc = new CalibrationSubCarrier(SubCarrier.CAL_1_FREQ, 0);
+        map.add(csc);
+
+        return map;
     }
 
     // Converts an ascii string to binary.  This is used for the user to send txt messages.
