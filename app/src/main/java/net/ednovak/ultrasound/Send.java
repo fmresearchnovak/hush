@@ -317,6 +317,7 @@ public class Send extends AppCompatActivity {
 
 
     private ArrayList<SubCarrier> genFrameMapLong(String binary){
+        Log.d(TAG, "Long Range (slow)");
         // Each data frame in the long range version should encode 10 bits
         assert(binary.length() == 10);
 
@@ -336,7 +337,7 @@ public class Send extends AppCompatActivity {
         }
 
         // Add the calibration sub-carrier 18648 (same as Carrier 1 in short-range / normal mode)
-        Log.d(TAG, "f: " + SubCarrier.CAL_1_FREQ + "   amp: " + 1 + "   phase: " + 0);
+        Log.d(TAG, "f: " + SubCarrier.CAL_1_FREQ + "   amp: " + 1.0 + "   phase: " + 0);
         CalibrationSubCarrier csc = new CalibrationSubCarrier(SubCarrier.CAL_1_FREQ, 0);
         map.add(csc);
 

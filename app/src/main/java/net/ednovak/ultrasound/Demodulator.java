@@ -91,7 +91,7 @@ class Demodulator implements Runnable{
                 break;
 
 
-            // This means we've found the hail signal and we need to decode the subsequent data
+            // This means we've found the hail signal and we need to decode_short the subsequent data
             // of this packet
             case STATE_DECODING:
                 short[] data = a_data.slice(0, 500);
@@ -120,7 +120,7 @@ class Demodulator implements Runnable{
 
 
                     if(mode == Library.MODE_SHORT) {
-                        sb.append(decode(frame));
+                        sb.append(decode_short(frame));
                     } else if(mode == Library.MODE_LONG) {
                         sb.append(decode_long(frame));
                     }
@@ -130,7 +130,7 @@ class Demodulator implements Runnable{
                     Log.d(TAG, " --- ");
                 }
                 String binary = sb.toString();
-                Tests.analyzeError(binary);
+                Tests.analyzeError(binary, mode);
                 // ------------------------------------------------------------------------------ //
 
 
@@ -164,11 +164,11 @@ class Demodulator implements Runnable{
         FiniteIntCache upList = new FiniteIntCache(ALPHA);
         FiniteIntCache downList = new FiniteIntCache(ALPHA);
         downList.insert(0);
-        upList.insert(amp[433]);
+        upList.insert(amp[433]); // bin of calibration sub-carrier freq 1
 
         StringBuffer sb = new StringBuffer();
         double thresh;
-        for(int i = startIdx; i < 487; i++){
+        for(int i = startIdx; i <= 425; i = i + 2){
             int cur = amp[i];
             double upAVG = upList.getAVG();
             double downAVG = downList.getAVG();
@@ -180,22 +180,16 @@ class Demodulator implements Runnable{
             //Log.d(TAG, "downList: " + downList);
             //Log.d(TAG, "i: " + i + "  f: " + i * Library.SubCarrier_DELTA + "  cur: " + cur + "  thresh: " + thresh + "  upAvg: " + upAVG + "  downAvg: " + downAVG);
 
-            // Just a little funny business for the calibration sub-carriers
-            // Calibration sub-carriers
-            if(i == 433 || i == 460){ // Bin of the calibration sub-carriers, skip
-                continue;
-            }
 
-            else { // Actual decoding of sub-carriers
-                if(cur > thresh){ // 1
-                    sb.append("1");
-                    if(cur < (BETA * upAVG)){
-                        upList.insert(cur);
-                    }
-                } else { // 0
-                    sb.append("0");
-                    downList.insert(cur);
+            // Actual decoding of sub-carriers
+            if(cur > thresh){ // 1
+                sb.append("1");
+                if(cur < (BETA * upAVG)){
+                    upList.insert(cur);
                 }
+            } else { // 0
+                sb.append("0");
+                downList.insert(cur);
             }
         }
 
@@ -208,10 +202,9 @@ class Demodulator implements Runnable{
         */
         String bitsA = sb.toString();
         return bitsA;
-
     }
 
-    private String decode(short[] frameAudio){
+    private String decode_short(short[] frameAudio){
         Complex[] in = Library.shortArrayToComplexArray(frameAudio);
         final Complex[] fftData = FFT.fft(in);
         final int startIdx = (int)(Math.round(Library.findStartingF() / (Library.SAMPLE_RATE / (fftData.length))));
@@ -233,7 +226,7 @@ class Demodulator implements Runnable{
         FiniteIntCache upList = new FiniteIntCache(ALPHA);
         FiniteIntCache downList = new FiniteIntCache(ALPHA);
         downList.insert(0);
-        upList.insert(amp[433]);
+        upList.insert(amp[433]); // 433 is bin of calibration sub-carrier 1
 
         StringBuffer sb = new StringBuffer();
         double thresh;

@@ -6,6 +6,8 @@ import net.ednovak.ultrasound.deprecated.FasterFFT;
 
 import java.util.Random;
 
+import static net.ednovak.ultrasound.Library.MODE_LONG;
+
 /**
  * Created by enovak on 5/11/17.
  */
@@ -212,8 +214,35 @@ public final class Tests {
     }
 
 
+    private static void analyzeErrorLong(String binary){
+        String gndTruth = Library.genSizeField(7, MODE_LONG) + Library.getRandomBits(7);
 
-    public static void analyzeError(String binary){
+
+        // Amplitude analysis
+        String errA = Library.getErrors(binary, gndTruth);
+        Log.d(TAG, "bitsA: " + binary);
+        Log.d(TAG, "gnd A: " + gndTruth);
+        Log.d(TAG, "err A: " + errA);
+        for(int i = 0; i < errA.length(); i++){
+            if(errA.charAt(i) == '1'){
+                Log.d(TAG, "First error on bit at index number: " + i);
+                break;
+            }
+        }
+        Log.d(TAG, " " + Library.errPer(errA) + "%");
+        Log.d(TAG, " ");
+        Log.d(TAG, " ");
+    }
+
+
+
+    public static void analyzeError(String binary, int mode){
+
+        if(mode == MODE_LONG){
+            analyzeErrorLong(binary);
+            return;
+        }
+
 
 
         // Unzip binary
@@ -222,7 +251,7 @@ public final class Tests {
         String bitsP = unzipped[1];
 
         // unzip ground truth
-        String gndTruth = Library.genSizeField(458, Library.MODE_LONG) + Library.getRandomBits(458); // Just assume it's this one for now
+        String gndTruth = Library.genSizeField(458, Library.MODE_SHORT) + Library.getRandomBits(458); // Just assume it's this one for now
         String[] gndUnzipped = unzip(gndTruth);
         String gndA = gndUnzipped[0];
         String gndP = gndUnzipped[1];
