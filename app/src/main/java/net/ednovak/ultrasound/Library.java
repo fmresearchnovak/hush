@@ -182,8 +182,9 @@ public class Library {
     	StringBuilder sb = new StringBuilder();
 
         Calendar calendar = Calendar.getInstance();
-        int hrSeed = calendar.get(Calendar.HOUR);
-        Random r = new Random(hrSeed);
+        //int hrSeed = calendar.get(Calendar.HOUR);
+        // Random selected but CONSTANT seed (constant across all devices)
+        Random r = new Random(77);
     	while(sb.length() < l){
     		sb.append((String.valueOf(r.nextInt(2))));
     	}
