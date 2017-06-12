@@ -97,6 +97,12 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:max="100"
         android:visibility="invisible"/>
+
+	<Button
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Generate Distance Test Signal"
+		android:onClick="genDistanceSignal" />
     
 </LinearLayout>
 </ScrollView>

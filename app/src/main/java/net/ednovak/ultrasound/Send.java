@@ -366,6 +366,18 @@ public class Send extends AppCompatActivity {
         Library.writeToFile("bits.bin", bits.getBytes());
     }
 
+    public void genDistanceSignal(View v){
+        short[] output = Tests.distanceTest();
+
+        audio = new ArrayList<Short>((int)(Library.SAMPLE_RATE*3));
+
+        // put data in there
+        for (int i = 0; i < output.length; i++) {
+            audio.add(output[i]);
+        }
+
+    }
+
 
 
     // Plays the sound stored in audio
