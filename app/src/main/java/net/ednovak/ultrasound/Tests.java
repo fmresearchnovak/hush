@@ -236,7 +236,9 @@ public final class Tests {
 
 
 
-    public static void analyzeError(String binary, int mode){
+    public static void analyzeError(String eccImplementedString, int mode){
+
+        String binary = ECC.eccDataExtraction(eccImplementedString);
 
         if(mode == MODE_LONG){
             analyzeErrorLong(binary);
@@ -288,13 +290,20 @@ public final class Tests {
         Log.d(TAG, " " + Library.errPer(errP) + "%");
         Log.d(TAG, " ");
 
-        // Entire packet analysis
+        // Entire packet analysis and ECC comparison
         Log.d(TAG, "bits: " + binary);
         Log.d(TAG, "gnd : " + gndTruth);
         String errors = Library.getErrors(binary, gndTruth);
         Log.d(TAG, "errs: " + errors);
         Log.d(TAG, "Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
 
+
+        //ecc checking
+        String eccCheckedString = ECC.eccChecking(binary);
+        String eccErrors = Library.getErrors(eccCheckedString, gndTruth);
+
+        Log.d(TAG, "ECC checked errs: " + errors);
+        Log.d(TAG, "ECC Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
 
     }
 
