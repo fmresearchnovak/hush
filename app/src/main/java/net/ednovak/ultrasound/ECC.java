@@ -1,5 +1,7 @@
 package net.ednovak.ultrasound;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -8,28 +10,41 @@ import java.util.ArrayList;
 
 public class ECC {
 
+    private final static String TAG = ECC.class.getName();
 
-    public static String eccImplementation(String originalData){
+    public static int calcNumParityBits(int stringLength){
 
         //Calculate how many parity bits needed
         int numParityBits = 0;
-        while(originalData.length()+ numParityBits > (int)Math.pow(2,numParityBits)){
+        while(stringLength+ numParityBits > (int)Math.pow(2,numParityBits)){
             numParityBits +=1;
         }
+
+        return numParityBits;
+
+    }
+
+
+    public static String eccImplementation(String originalData, int numParityBits){
+
+        Log.d(TAG, "NumParity bits: " + String.valueOf(numParityBits));
         //insert the parity bits into the data bits
         StringBuilder outputString = new StringBuilder("");
 
         int subStringIndex  = 0;
-        for(int i = 0; i < numParityBits; i++){
+        outputString.append("0");
+        for(int i = 1; i < numParityBits; i++){
             outputString.append("0");
-            if((int)Math.pow(2, i+1)  - (int)Math.pow(2, i) - 1 > 0){
-                outputString.append(originalData.substring(subStringIndex, subStringIndex + (int)Math.pow(2, i+1)  - (int)Math.pow(2, i) - 1 ));
 
-            }
-
+            outputString.append(originalData.substring(subStringIndex, Math.min((subStringIndex + (int)Math.pow(2,i)-1),originalData.length())));
+            Log.d(TAG, "Added: "+ originalData.substring(subStringIndex, Math.min((subStringIndex + (int)Math.pow(2,i)-1),originalData.length())));
+            subStringIndex = subStringIndex + (int)Math.pow(2,i)-1;
         }
 
+
         int newECCStringLength = outputString.length();
+
+        Log.d(TAG, "ECC String length: " + String.valueOf(newECCStringLength));
 
         //implement the values of the parity bits
         for(int i = 0; i < numParityBits; i++){

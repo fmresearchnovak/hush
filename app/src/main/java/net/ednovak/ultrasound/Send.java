@@ -145,22 +145,50 @@ public class Send extends AppCompatActivity {
 
 
         // ---- Frames -------------------------------------------------------------------------- //
+
+
         int s;
         int e;
         for(int i = 0; i < numFrames; i++){
             Log.d(TAG, "Frame " + i);
-            s = i * bitsPerFrame;
-            e = Math.min(((i * bitsPerFrame) + bitsPerFrame), binData.length());
+
+
+            int numParityBits = ECC.calcNumParityBits(binData.length()/3);
+            int dataBitsPerFrame = bitsPerFrame - numParityBits;
+
+            s = i * dataBitsPerFrame;
+            e = Math.min(((i * dataBitsPerFrame) + dataBitsPerFrame), binData.length());
             String curFrameBinary = binData.substring(s, e);
 
+            Log.d(TAG, "Current Frame Size : " + String.valueOf(curFrameBinary.length()));
+
             //ECC implementation
-            String eccImplementedString = ECC.eccImplementation(curFrameBinary);
+            String eccImplementedString = ECC.eccImplementation(curFrameBinary, numParityBits);
 
 
             Log.d(TAG, "Original binary: " + curFrameBinary);
             Log.d(TAG, "ECC Implemented: " + eccImplementedString);
+
+            //Test
+            String checkedString = ECC.eccChecking(eccImplementedString);
+            String extractedString = ECC.eccDataExtraction(checkedString);
+            Log.d(TAG, "CheckedString is: " + checkedString);
+            Log.d(TAG, "Checked String size is: " + String.valueOf(checkedString.length()));
+            Log.d(TAG, "Extract string is " + extractedString);
+            Log.d(TAG, "Extract string size is: " + String.valueOf(extractedString.length()));
+
+
+
             appendFrame(eccImplementedString);
+
+
         }
+
+
+
+
+
+
         // -------------------------------------------------------------------------------------- //
 
 
@@ -254,8 +282,6 @@ public class Send extends AppCompatActivity {
             try{
                 int numberOfBits = Integer.valueOf(((EditText)findViewById(R.id.data)).getText().toString());
                 bitString = Library.getRandomBits(numberOfBits);
-
-                //Implement ECC bits
 
             } catch (NumberFormatException e){
                 Toast.makeText(this, "Please enter a number of bits", Toast.LENGTH_SHORT).show();

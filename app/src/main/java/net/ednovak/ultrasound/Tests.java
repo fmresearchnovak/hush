@@ -236,9 +236,9 @@ public final class Tests {
 
 
 
-    public static void analyzeError(String eccImplementedString, int mode){
+    public static void analyzeError(String binary, int mode){
 
-        String binary = ECC.eccDataExtraction(eccImplementedString);
+
 
         if(mode == MODE_LONG){
             analyzeErrorLong(binary);
@@ -253,7 +253,7 @@ public final class Tests {
         String bitsP = unzipped[1];
 
         // unzip ground truth
-        String gndTruth = Library.genSizeField(458, Library.MODE_SHORT) + Library.getRandomBits(458); // Just assume it's this one for now
+        String gndTruth = Library.genSizeField(434, Library.MODE_SHORT) + Library.getRandomBits(434); // Just assume it's this one for now
         String[] gndUnzipped = unzip(gndTruth);
         String gndA = gndUnzipped[0];
         String gndP = gndUnzipped[1];
@@ -298,12 +298,12 @@ public final class Tests {
         Log.d(TAG, "Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
 
 
-        //ecc checking
-        String eccCheckedString = ECC.eccChecking(binary);
-        String eccErrors = Library.getErrors(eccCheckedString, gndTruth);
-
-        Log.d(TAG, "ECC checked errs: " + errors);
-        Log.d(TAG, "ECC Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
+//        //ecc checking
+//        String eccCheckedString = ECC.eccChecking(binary);
+//        String eccErrors = Library.getErrors(eccCheckedString, gndTruth);
+//
+//        Log.d(TAG, "ECC checked errs: " + errors);
+//        Log.d(TAG, "ECC Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
 
     }
 
@@ -336,7 +336,7 @@ public final class Tests {
 
     public static short[] distanceTest(){
 
-        SubCarrier sc = new SubCarrier(10000, 0, 1.0, false);
+        SubCarrier sc = new SubCarrier(18217, 0, 1.0, false);
 
         // ---- Create the actual audio data from this sub-carrier ----------------------------- //
         double[] signal = new double[(int)(Library.SAMPLE_RATE*3)];
