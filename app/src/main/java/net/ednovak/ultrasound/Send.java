@@ -152,8 +152,14 @@ public class Send extends AppCompatActivity {
             s = i * bitsPerFrame;
             e = Math.min(((i * bitsPerFrame) + bitsPerFrame), binData.length());
             String curFrameBinary = binData.substring(s, e);
-            Log.d(TAG, "binary: " + curFrameBinary);
-            appendFrame(curFrameBinary);
+
+            //ECC implementation
+            String eccImplementedString = ECC.eccImplementation(curFrameBinary);
+
+
+            Log.d(TAG, "Original binary: " + curFrameBinary);
+            Log.d(TAG, "ECC Implemented: " + eccImplementedString);
+            appendFrame(eccImplementedString);
         }
         // -------------------------------------------------------------------------------------- //
 
@@ -248,6 +254,9 @@ public class Send extends AppCompatActivity {
             try{
                 int numberOfBits = Integer.valueOf(((EditText)findViewById(R.id.data)).getText().toString());
                 bitString = Library.getRandomBits(numberOfBits);
+
+                //Implement ECC bits
+
             } catch (NumberFormatException e){
                 Toast.makeText(this, "Please enter a number of bits", Toast.LENGTH_SHORT).show();
                 return null;
