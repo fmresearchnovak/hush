@@ -558,6 +558,22 @@ public class Library {
         return sb.toString();
     }
 
+
+    public static String getErrorLocation(String a, String b){
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < a.length(); i++){
+            try {
+                if (a.charAt(i) != b.charAt(i)) {
+                    sb.append(String.valueOf(i) + " ,");
+                }
+            } catch (StringIndexOutOfBoundsException e1){
+                break;
+            }
+
+        }
+        return sb.toString();
+    }
+
     public static double errPer(String errString){
         double sum = 0;
         for(int i = 0; i < errString.length(); i++){

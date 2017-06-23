@@ -178,7 +178,6 @@ public class Send extends AppCompatActivity {
             Log.d(TAG, "Extract string size is: " + String.valueOf(extractedString.length()));
 
 
-
             appendFrame(eccImplementedString);
 
 

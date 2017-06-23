@@ -26,6 +26,10 @@ class Demodulator implements Runnable{
     private int mode;
 
 
+    //Test
+    StringBuilder eccString;
+
+
     public Demodulator(BlockingAudioList newBuffer, int newMode){
         super();
         a_data = newBuffer;
@@ -115,6 +119,10 @@ class Demodulator implements Runnable{
                 a_data.eat(startGuess);
 
                 StringBuilder sb = new StringBuilder();
+
+
+                //Test
+                eccString = new StringBuilder();
                 for(int i = 0; i < numFrames; i++) {
                     short[] frame = a_data.slice(0, Library.DATA_FRAME_SIZE+1);
 
@@ -131,6 +139,7 @@ class Demodulator implements Runnable{
                 }
                 String binary = sb.toString();
                 Tests.analyzeError(binary, mode);
+                Tests.analyzeAfterECCError(eccString.toString());
                 // ------------------------------------------------------------------------------ //
 
 
@@ -342,7 +351,11 @@ class Demodulator implements Runnable{
         String eccCheckedString = ECC.eccChecking(bits);
         String extractedData = ECC.eccDataExtraction(eccCheckedString);
 
-        return extractedData;
+        eccString.append(extractedData);
+
+        String uncheckedString = ECC.eccDataExtraction(bits);
+
+        return uncheckedString;
     }
 
 

@@ -294,16 +294,23 @@ public final class Tests {
         Log.d(TAG, "bits: " + binary);
         Log.d(TAG, "gnd : " + gndTruth);
         String errors = Library.getErrors(binary, gndTruth);
+        String errorLocations = Library.getErrorLocation(binary, gndTruth);
         Log.d(TAG, "errs: " + errors);
+        Log.d(TAG, "Error Locations: " + errorLocations);
         Log.d(TAG, "Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
 
+    }
 
-//        //ecc checking
-//        String eccCheckedString = ECC.eccChecking(binary);
-//        String eccErrors = Library.getErrors(eccCheckedString, gndTruth);
-//
-//        Log.d(TAG, "ECC checked errs: " + errors);
-//        Log.d(TAG, "ECC Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
+    public static void analyzeAfterECCError(String binary){
+        String gndTruth = Library.genSizeField(434, Library.MODE_SHORT) + Library.getRandomBits(434);
+        // Entire packet analysis and ECC comparison
+        Log.d(TAG, "ECC bits: " + binary);
+        Log.d(TAG, "gnd : " + gndTruth);
+        String errors = Library.getErrors(binary, gndTruth);
+        String errorLocations = Library.getErrorLocation(binary, gndTruth);
+        Log.d(TAG, "ECC errs: " + errors);
+        Log.d(TAG, "ECC Error Locations: " + errorLocations);
+        Log.d(TAG, "ECC Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
 
     }
 
