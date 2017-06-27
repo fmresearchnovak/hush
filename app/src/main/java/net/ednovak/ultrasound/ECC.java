@@ -21,14 +21,30 @@ public class ECC {
             numParityBits +=1;
         }
 
-        return numParityBits;
+        return numParityBits;   //additional overall parity bit
 
+    }
+
+
+    public static String eccGetOverallParityBits(String eccImplementedString){
+
+        int sum = 0;
+
+        for(int i = 0; i < eccImplementedString.length(); i++){
+            sum = sum + Integer.valueOf(eccImplementedString.substring(i, i +1));
+        }
+
+        if(sum%2 == 0){
+            return "0";
+        }else{
+            return "1";
+        }
     }
 
 
     public static String eccImplementation(String originalData, int numParityBits){
 
-        Log.d(TAG, "NumParity bits: " + String.valueOf(numParityBits));
+        //Log.d(TAG, "NumParity bits: " + String.valueOf(numParityBits));
         //insert the parity bits into the data bits
         StringBuilder outputString = new StringBuilder("");
 
@@ -38,14 +54,14 @@ public class ECC {
             outputString.append("0");
 
             outputString.append(originalData.substring(subStringIndex, Math.min((subStringIndex + (int)Math.pow(2,i)-1),originalData.length())));
-            Log.d(TAG, "Added: "+ originalData.substring(subStringIndex, Math.min((subStringIndex + (int)Math.pow(2,i)-1),originalData.length())));
+            //Log.d(TAG, "Added: "+ originalData.substring(subStringIndex, Math.min((subStringIndex + (int)Math.pow(2,i)-1),originalData.length())));
             subStringIndex = subStringIndex + (int)Math.pow(2,i)-1;
         }
 
 
         int newECCStringLength = outputString.length();
 
-        Log.d(TAG, "ECC String length: " + String.valueOf(newECCStringLength));
+        //Log.d(TAG, "ECC String length: " + String.valueOf(newECCStringLength));
 
         //implement the values of the parity bits
 
@@ -67,9 +83,7 @@ public class ECC {
                     }else{
                         break;
                     }
-
                     index += 1;
-
                 }
 
 
@@ -78,20 +92,27 @@ public class ECC {
                 index = index + step;
             }
 
-            Log.d(TAG, "sum is : " + String.valueOf(sum) + "; integer value is : " + String.valueOf(Integer.valueOf(originalData.substring((int)Math.pow(2, i)-1, (int)Math.pow(2, i)-1+1))));
+            //Log.d(TAG, "sum is : " + String.valueOf(sum) + "; integer value is : " + String.valueOf(Integer.valueOf(originalData.substring((int)Math.pow(2, i)-1, (int)Math.pow(2, i)-1+1))));
 
             outputString.setCharAt((int)Math.pow(2, i)-1, Character.forDigit(sum%2, 10));
             test.append(Character.forDigit(sum%2, 10) + " ,");
 
         }
 
-        Log.d(TAG, "Implementation Parity bits are : " + test.toString());
+        //add the overall parity bit
+        String overallParityBits = eccGetOverallParityBits(outputString.toString());
+        outputString.append(overallParityBits);
+
+
+        //Log.d(TAG, "Implementation Parity bits are : " + test.toString());
 
         return outputString.toString();
 
     }
 
-    public static String eccChecking(String originalData){
+    public static String eccChecking(String uncheckedString){
+
+        String originalData = uncheckedString.substring(0, uncheckedString.length()-1); //exclude the overall parity bit
 
         ArrayList<Integer> parityBits = new ArrayList();
 
@@ -102,7 +123,7 @@ public class ECC {
         }
 
 
-        Log.d(TAG, "Checking, numParityBits: " + String.valueOf(numParityBits));
+        //Log.d(TAG, "Checking, numParityBits: " + String.valueOf(numParityBits));
 
         //check for errors (Assume only one error now)
         int location = 0;
@@ -140,30 +161,37 @@ public class ECC {
                 parityBits.add(1);
                 test.append("1 ,");
                 location += (int)Math.pow(2, i);
-                Log.d(TAG, "Locations is: " + String.valueOf(location));
+                //Log.d(TAG, "Locations is: " + String.valueOf(location));
             }
 
-            Log.d(TAG, "sum is : " + String.valueOf(sum) + "; integer value is : " + String.valueOf(Integer.valueOf(originalData.substring(indexOfParityBit, indexOfParityBit+1))) + "Compare result is : " + String.valueOf(Integer.valueOf(originalData.substring(indexOfParityBit, indexOfParityBit+1)) == sum%2));
+            //Log.d(TAG, "sum is : " + String.valueOf(sum) + "; integer value is : " + String.valueOf(Integer.valueOf(originalData.substring(indexOfParityBit, indexOfParityBit+1))) + "Compare result is : " + String.valueOf(Integer.valueOf(originalData.substring(indexOfParityBit, indexOfParityBit+1)) == sum%2));
 
 
 
         }
 
-        Log.d(TAG, "Checking Parity bits are : " + test.toString());
+
+        String checkingOverallParityBit = eccGetOverallParityBits(uncheckedString);
+        if(location != 0 && Integer.valueOf(checkingOverallParityBit) == 0){
+            //Log.d(TAG, "There is two or more error. ");
+        }
+
+
+        //Log.d(TAG, "Checking Parity bits are : " + test.toString());
 
         StringBuilder output = new StringBuilder(originalData);
 
 
         //Correction
         if(location != 0 && location-1 < originalData.length()){
-            if(Integer.valueOf(originalData.charAt(location-1)) == 0){
-                output.setCharAt(location-1, "1".charAt(0));
+            if(originalData.substring(location-1, location).equals("0")){
+                output.replace(location-1, location, "1");
 
-                Log.d(TAG, "Corrected: " + "Previous was: " + String.valueOf(originalData.charAt(location-1)) + " Now is: 1");
+                Log.d(TAG, "Corrected at Location: " + String.valueOf(location-1) + "Previous was: " + String.valueOf(originalData.charAt(location-1)) + " Now is: 1");
             }else{
-                output.setCharAt(location-1, "0".charAt(0));
+                output.replace(location-1, location, "0");
 
-                Log.d(TAG, "Corrected: " + "Previous was: " + String.valueOf(originalData.charAt(location-1)) + " Now is: 0");
+                Log.d(TAG, "Corrected at Location: " + String.valueOf(location-1) + "Previous was: " + String.valueOf(originalData.charAt(location-1)) + " Now is: 0");
             }
 
 
@@ -174,6 +202,7 @@ public class ECC {
         return output.toString();
 
     }
+
 
 
     public static String eccDataExtraction(String originalData){

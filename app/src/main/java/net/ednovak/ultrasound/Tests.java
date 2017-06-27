@@ -302,7 +302,7 @@ public final class Tests {
     }
 
     public static void analyzeAfterECCError(String binary){
-        String gndTruth = Library.genSizeField(434, Library.MODE_SHORT) + Library.getRandomBits(434);
+        String gndTruth = Library.genSizeField(431, Library.MODE_SHORT) + Library.getRandomBits(431);
         // Entire packet analysis and ECC comparison
         Log.d(TAG, "ECC bits: " + binary);
         Log.d(TAG, "gnd : " + gndTruth);
@@ -363,5 +363,79 @@ public final class Tests {
         return output;
 
 
+    }
+
+    public static String eccErrorGen(int numberOfError, String orginalString){
+
+        StringBuilder errorString = new StringBuilder(orginalString);
+
+        Random rand = new Random();
+        int previousError = 0;
+        for(int i = 0; i < numberOfError; i++){
+
+            int  errorLocation = rand.nextInt(130);
+            while(errorLocation == previousError){
+                errorLocation = rand.nextInt(130);
+            }
+            if(Integer.valueOf(errorString.substring(errorLocation, errorLocation+1)) == 0){
+                errorString.replace(errorLocation, errorLocation+1, "1");
+            }else{
+                errorString.replace(errorLocation, errorLocation+1, "0");
+            }
+        }
+
+        return errorString.toString();
+    }
+
+    public static void eccTest(String gndTruthString){
+
+        int sum = 0;
+        String implementedString = ECC.eccImplementation(gndTruthString, ECC.calcNumParityBits(gndTruthString.length()));
+        for(int j = 0; j<100; j++){
+
+            StringBuilder errorString = new StringBuilder(implementedString);
+
+            Random rand = new Random();
+            int previousError = 0;
+            for(int i = 0; i < 2; i++){
+
+                int  errorLocation = rand.nextInt(130);
+                while(errorLocation == previousError){
+                    errorLocation = rand.nextInt(130);
+                }
+                if(Integer.valueOf(errorString.substring(errorLocation, errorLocation+1)) == 0){
+                    errorString.replace(errorLocation, errorLocation+1, "1");
+                }else{
+                    errorString.replace(errorLocation, errorLocation+1, "0");
+                }
+
+                previousError = errorLocation;
+
+                Log.d(TAG, "Error Location is " + String.valueOf(errorLocation));
+            }
+
+            if(eccDoubleErrorCheck(errorString.toString().substring(0, errorString.length()-1), implementedString.substring(implementedString.length() -1, implementedString.length()))){
+                sum += 1;
+            }
+        }
+
+        if(sum == 100){
+            Log.d(TAG, "ECC TEST WORKING FOR SINGLE ERROR CORRECTION!!!!!");
+        }else{
+            Log.d(TAG, "ECC TEST NOT WORKING FOR SINGLE ERROR CORRECTION!!!!!");
+            Log.d(TAG, "Sum is " + String.valueOf(sum));
+        }
+
+
+
+    }
+
+    public static boolean eccDoubleErrorCheck(String uncheckedString, String overallParityBit){
+        String checkingOverallParityBit = ECC.eccGetOverallParityBits(uncheckedString);
+        if(Integer.valueOf(checkingOverallParityBit) == 0){
+            return false;
+        }else{
+            return true;
+        }
     }
 }

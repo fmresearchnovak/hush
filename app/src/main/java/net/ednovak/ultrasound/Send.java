@@ -154,7 +154,7 @@ public class Send extends AppCompatActivity {
 
 
             int numParityBits = ECC.calcNumParityBits(binData.length()/3);
-            int dataBitsPerFrame = bitsPerFrame - numParityBits;
+            int dataBitsPerFrame = bitsPerFrame - numParityBits-1;
 
             s = i * dataBitsPerFrame;
             e = Math.min(((i * dataBitsPerFrame) + dataBitsPerFrame), binData.length());
@@ -169,14 +169,7 @@ public class Send extends AppCompatActivity {
             Log.d(TAG, "Original binary: " + curFrameBinary);
             Log.d(TAG, "ECC Implemented: " + eccImplementedString);
 
-            //Test
-            String checkedString = ECC.eccChecking(eccImplementedString);
-            String extractedString = ECC.eccDataExtraction(checkedString);
-            Log.d(TAG, "CheckedString is: " + checkedString);
-            Log.d(TAG, "Checked String size is: " + String.valueOf(checkedString.length()));
-            Log.d(TAG, "Extract string is " + extractedString);
-            Log.d(TAG, "Extract string size is: " + String.valueOf(extractedString.length()));
-
+            Tests.eccTest(curFrameBinary);
 
             appendFrame(eccImplementedString);
 
