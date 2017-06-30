@@ -20,8 +20,7 @@ public class ECC {
         while(stringLength+ numParityBits > (int)Math.pow(2,numParityBits)){
             numParityBits +=1;
         }
-
-        return numParityBits;   //additional overall parity bit
+        return numParityBits;
 
     }
 

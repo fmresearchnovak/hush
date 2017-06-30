@@ -234,8 +234,6 @@ public final class Tests {
         Log.d(TAG, " ");
     }
 
-
-
     public static void analyzeError(String binary, int mode){
 
 
@@ -253,7 +251,7 @@ public final class Tests {
         String bitsP = unzipped[1];
 
         // unzip ground truth
-        String gndTruth = Library.genSizeField(431, Library.MODE_SHORT) + Library.getRandomBits(431); // Just assume it's this one for now
+        String gndTruth = Library.genSizeField(binary.length()-10, Library.MODE_SHORT) + Library.getRandomBits(431); // Just assume it's this one for now
         String[] gndUnzipped = unzip(gndTruth);
         String gndA = gndUnzipped[0];
         String gndP = gndUnzipped[1];
@@ -312,8 +310,28 @@ public final class Tests {
         Log.d(TAG, "ECC Error Locations: " + errorLocations);
         Log.d(TAG, "ECC Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
 
+
+        //Text message test
+        Log.d(TAG, "---------------------------TEXT MESSAGE TEST----------------");
+        decodeTextMessageTest(binary);
+
+
+
     }
 
+    public static void decodeTextMessageTest(String binary){
+        int size = Integer.parseInt(binary.substring(0,10), 2);
+
+        Log.d(TAG, "Size is " + String.valueOf(size));
+
+        if(10+size*8 < 441){
+            String dataBinary = binary.substring(10, 10+size*8);
+            String asciiString = Library.binary2ascii(dataBinary);
+
+            Log.d(TAG, "Converted back is " + asciiString);
+        }
+
+       }
 
     private static String[] unzip(String binary){
         StringBuilder a = new StringBuilder();

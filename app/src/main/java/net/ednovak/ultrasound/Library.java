@@ -650,4 +650,23 @@ public class Library {
             throw new IllegalArgumentException("Invalid mode: " + curMode);
         }
     }
+
+    /**
+     * Takes a binary string and convert to a ascii string
+     * @param binary  a binary string that only contains the actually data bits that encode ascii symbols
+     * @return a ascii string
+     */
+    public static String binary2ascii(String binary){
+        String ascii = "";
+        char nextChar;
+
+        for(int i = 0; i <= binary.length()-8; i += 8) //this is a little tricky.  we want [0, 7], [9, 16], etc (increment index by 9 if bytes are space-delimited)
+        {
+            nextChar = (char)Integer.parseInt(binary.substring(i, i+8), 2);
+            ascii += nextChar;
+        }
+
+        return ascii;
+
+    }
 }

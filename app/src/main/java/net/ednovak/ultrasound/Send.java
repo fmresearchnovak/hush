@@ -23,6 +23,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import junit.framework.Test;
 
 
 public class Send extends AppCompatActivity {
@@ -169,11 +170,7 @@ public class Send extends AppCompatActivity {
             Log.d(TAG, "Original binary: " + curFrameBinary);
             Log.d(TAG, "ECC Implemented: " + eccImplementedString);
 
-            Tests.eccTest(curFrameBinary);
-
             appendFrame(eccImplementedString);
-
-
         }
 
 
@@ -266,15 +263,17 @@ public class Send extends AppCompatActivity {
         RadioButton rDebug = (RadioButton)findViewById(R.id.radio_debug);
         RadioButton rDebugL = (RadioButton)findViewById(R.id.radio_debug_long);
         String bitString = "";
+        String sField = "";
 
         if(rMessage.isChecked()){ // Message
             String message = ((EditText)findViewById(R.id.data)).getText().toString();
             bitString = ascii2Binary(message);
+            sField = Library.genSizeField(bitString.length()/8, mode);
         } else if (rRandom.isChecked()){ // Random Bits
             try{
                 int numberOfBits = Integer.valueOf(((EditText)findViewById(R.id.data)).getText().toString());
                 bitString = Library.getRandomBits(numberOfBits);
-
+                sField = Library.genSizeField(bitString.length(), mode);
             } catch (NumberFormatException e){
                 Toast.makeText(this, "Please enter a number of bits", Toast.LENGTH_SHORT).show();
                 return null;
@@ -282,17 +281,27 @@ public class Send extends AppCompatActivity {
         } else if (rDebug.isChecked() || rDebugL.isChecked()) { // Debug binary
             EditText et = (EditText)findViewById(R.id.data);
             bitString = et.getText().toString();
+            sField = Library.genSizeField(bitString.length(), mode);
         }
         else{ // Should be unreachable, only occurs when all radio buttons are not selected
             throw new IllegalStateException("No Message Selected!");
         }
 
 
+        //TODO currently it follows that every signal has 3-packet length so that each signal that is less than that length should append 0s
+        String appendString = "";
+        if(bitString.length() < 431){
+            appendString = new String(new char[431-bitString.length()]).replace("\0", "0");
+
+        }
+
         // Add the extra size field bits
-        String sField = Library.genSizeField(bitString.length(), mode);
-        Log.d(TAG, "sField    : " + sField);
+
+        Log.d(TAG, "sField    : " + sField + "Size is " + String.valueOf(Integer.parseInt(sField, 2)));
         Log.d(TAG, "data      : " + bitString);
+        Log.d(TAG, "Original bitString length: " + bitString.length());
         bitString = sField + bitString;
+        bitString = bitString + appendString;   //append the 0s to ensure the overall length is 3-packet
         Log.d(TAG, "bitString : " + bitString);
         Log.d(TAG, "bitString length: " + bitString.length());
 
