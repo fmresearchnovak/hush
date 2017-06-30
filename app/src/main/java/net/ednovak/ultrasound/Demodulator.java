@@ -348,13 +348,13 @@ class Demodulator implements Runnable{
 
         String bits = zip(bitsA, bitsP); // Just a simple interleave
 
+        //check after ECC checking
         String eccCheckedString = ECC.eccChecking(bits);
         String extractedData = ECC.eccDataExtraction(eccCheckedString);
-
         eccString.append(extractedData);
 
-        String uncheckedString = ECC.eccDataExtraction(bits);
 
+        String uncheckedString = ECC.eccDataExtraction(bits.substring(0, bits.length()-1));
         return uncheckedString;
     }
 
