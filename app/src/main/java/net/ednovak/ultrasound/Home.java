@@ -17,6 +17,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import java.text.DecimalFormat;
@@ -26,6 +27,10 @@ import java.text.DecimalFormat;
 // Allows the user to listen / receive data
 public class Home extends AppCompatActivity {
 	private final static String TAG = Home.class.getName();
+
+	// Permissions can be added as they are needed by simply adding them to this array.
+	public final static String[] PERMS = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+			Manifest.permission.RECORD_AUDIO};
 
 	private ToggleButton tb;
     private ImageView signal;
@@ -38,6 +43,7 @@ public class Home extends AppCompatActivity {
 
     private int mode;
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +54,9 @@ public class Home extends AppCompatActivity {
         signal = (ImageView)findViewById(R.id.home_iv_signal);
 
 		Log.d(TAG, "Ultrasound App Running!");
+
+
+		Library.TestHilbert();
 	}
 
 	@Override
@@ -56,6 +65,7 @@ public class Home extends AppCompatActivity {
         SharedPreferences sharedPref = this.getSharedPreferences("edu.fandm.enovak.hush", Context.MODE_PRIVATE);
         mode = sharedPref.getInt("MODE", 1);
         updateUIMode();
+		checkPerms();
     }
 
 	@Override
@@ -125,16 +135,9 @@ public class Home extends AppCompatActivity {
 
 
 	private void startRec(){
-		// Producer/consumer model.
-
-		// Assume thisActivity is the current activity
-		String perm = Manifest.permission.RECORD_AUDIO;
-		int permissionCheck = ContextCompat.checkSelfPermission(this, perm);
-		if(permissionCheck != PackageManager.PERMISSION_GRANTED){
-			ActivityCompat.requestPermissions(this, new String[]{perm}, 001);
-			return;
-		}
-
+		// Starts recording.
+		// This modem uses a Producer/consumer model.  The microphone produces samples
+		// The Demodulator consumes samples (and outputs the decoded signal binary).
 
 		// My own implementation that allows peeking into a blocking queue
 		dataBuffer = new BlockingAudioList(Demodulator.getMinQueueSize());
@@ -151,6 +154,29 @@ public class Home extends AppCompatActivity {
 		//updateUIThread.start();
 
         //producer.insertFromFile("/sdcard/ultrasound/origin.pcm");
+	}
+
+
+	public void onRequestPermissionsResult(int code, String[] perms, int[] results){
+		if(code == 1){
+			for(int i = 0; i < results.length; i++){
+				if(results[i] == PackageManager.PERMISSION_DENIED){
+					Toast.makeText(ctx, "All permissions are necessary.", Toast.LENGTH_SHORT).show();
+					finish();
+				}
+			}
+		}
+	}
+
+	private boolean checkPerms(){
+		// check all permissions
+		for(int i = 0; i < PERMS.length; i++){
+			if(ContextCompat.checkSelfPermission(ctx, PERMS[i]) != PackageManager.PERMISSION_GRANTED){
+				ActivityCompat.requestPermissions(this, PERMS, 1);
+				return false;
+			}
+		}
+		return true;
 	}
 
 

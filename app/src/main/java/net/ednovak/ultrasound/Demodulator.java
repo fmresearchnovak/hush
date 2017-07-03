@@ -15,7 +15,6 @@ class Demodulator implements Runnable{
     // So 50 samples will definitely land in / on that 100 sample portion
     // It might take at most 3 sets of 50 samples before we reach the height of the hail signal
     // FYI: 50 samples at 44100 = 0.0011337 seconds = 1.1337 ms ELITE!
-    private final static double THRESH_PER = 0.20; // Percentage RMS, used to trigger decoding
     private int numFrames = 3;
     private boolean running = false;
 
@@ -24,7 +23,6 @@ class Demodulator implements Runnable{
     private int STATE = 1;
     private long transitionTS;
     private int mode;
-
 
     //Test
     StringBuilder eccString;
@@ -47,8 +45,6 @@ class Demodulator implements Runnable{
         return;
     };
 
-
-
     public void run() {
         running = true;
         while (running) {
@@ -70,27 +66,54 @@ class Demodulator implements Runnable{
     private void readQueue() throws InterruptedException{
         switch(STATE){
             case STATE_LISTENING:
-                // Get a chunk  I grab 100 - 150 because this will be the height of the hail signal strength
-                // but I will need the hail signal starting at it's weakest point (in theory exactly 100
-                // samples before the beginning of preChunk)
-                short[] preChunk = a_data.slice(100, 150);
+                // Get a chunk;  I grab 100 - 165 because I have to use a power of 2 and
+                // This guaranteed to not possibly "miss" the strongest part of the hail signal
+                // which is the middle 100 samples long (the entire hail is 300 samples).
+                // When identified, I will need the hail signal starting at the beginning
+                // which is it's weakest point (in theory exactly 100 samples before
+                // the beginning of preChunk)
+                short[] preChunk = a_data.slice(100, 165);
 
+
+                // --- Option 1, using FFT and window ------------------------------------------- //
+                // Old way, use filter
                 // Use HighPass FIR filter to muffle low-freq noise
-                short[] filteredSignal = Library.FIR(preChunk);
+                //short[] filteredSignal = Library.FIR(preChunk);
+                Library.hannWindow(preChunk);
 
-                //Test RMS of this chunk, the threshold could use some adjusting
-                // It doesn't work well for senders that are farther or quieter
-                double rms = Library.RMS(0, filteredSignal.length, filteredSignal);
-                double per = rms / Short.MAX_VALUE;
-                if(per > THRESH_PER){
-                    Log.d(TAG, "Hail signal heard!  RMS per: " + per);
+                // This could be more efficient by using the Goertzel algorithm to compute
+                // the FFT only for the values we're interested in (since we're reading only
+                // two bins.  Also, the Goertzel algorithm would be more accurate; calculating
+                // the response of exactly 18k.
+
+                Complex[] in = Library.shortArrayToComplexArray(preChunk);
+                final Complex[] fftData = FFT.fft(in);
+                double valNeighbor = fftData[22].abs();
+                double valHail = fftData[26].abs();
+                //Log.d(TAG, "amb: " + valAmbient + "   hail: " + valHail);
+
+
+                // --- Old method used RMS, that approach is not ideal, even with a great filter //
+                // Test RMS of this chunk, the threshold could use some adjusting
+                // New filter coefficients should help cut out false positives and false negatives
+                //double rms = Library.RMS(0, filteredSignal.length, filteredSignal);
+                //double per = rms / Short.MAX_VALUE;
+                //Log.d(TAG, "RMS: " + rms + "    per: " + per);
+                // ------------------------------------------------------------------------------ //
+
+                //int slope = (int)((valHail - valNeighbor) / 2);
+                double diff = valHail - valNeighbor;
+
+                if( diff > 500){
+                    Log.d(TAG, "Hail signal heard!   valHail: " + valHail + "   valNeighbor: " + valNeighbor + "   diff: " + diff);
                     //Library.writeToFile("filtered" + recCount + ".pcm", filteredSignal);
                     //Library.writeToFile("unfiltered" + recCount + ".pcm", preChunk);
                     incState();
+                    //a_data.eat(64);
                 } else{
                     // If this isn't loud enough there isn't a hail signal here and we can move forward
-                    a_data.eat(50);
-                    //Log.d(TAG, "Ate 50");
+                    a_data.eat(64);
+                    //Log.d(TAG, "Ate 64");
                 }
                 break;
 
@@ -98,7 +121,7 @@ class Demodulator implements Runnable{
             // This means we've found the hail signal and we need to decode_short the subsequent data
             // of this packet
             case STATE_DECODING:
-                short[] data = a_data.slice(0, 500);
+                short[] data = a_data.slice(0, 513); // must be a power of two for findHail to finish
                 int startGuess = findHail(data);
                 startGuess = startGuess + Library.HAIL_SIZE + Library.RAMP_SIZE;
                 Log.d(TAG, "startGuess: " + startGuess);
@@ -122,8 +145,8 @@ class Demodulator implements Runnable{
 
 
                 //Test
-                eccString = new StringBuilder();
                 for(int i = 0; i < numFrames; i++) {
+                    Log.d(TAG, "Decoding frame: " + i);
                     short[] frame = a_data.slice(0, Library.DATA_FRAME_SIZE+1);
 
 
@@ -135,11 +158,22 @@ class Demodulator implements Runnable{
 
                     // Eat this frame and the ending ramp and the starting ramp of the next frame
                     a_data.eat(Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2));
-                    Log.d(TAG, " --- ");
                 }
+
                 String binary = sb.toString();
                 Tests.analyzeError(binary, mode);
-                Tests.analyzeAfterECCError(eccString.toString());
+
+
+                // ECC
+                //String eccCheckedString = ECC.eccChecking(binary);
+                //String extractedData = ECC.eccDataExtraction(eccCheckedString);
+
+                //String uncheckedString = ECC.eccDataExtraction(bits.substring(0, bits.length()-1));
+
+                //Tests.analyzeError(binary, mode);
+                //Tests.analyzeAfterECCError(extractedData);
+                //Tests.analyzeAfterECCError(eccCheckedString);
+
                 // ------------------------------------------------------------------------------ //
 
 
@@ -156,7 +190,7 @@ class Demodulator implements Runnable{
         Complex[] in = Library.shortArrayToComplexArray(frameAudio);
         final Complex[] fftData = FFT.fft(in);
         final int startIdx = (int)(Math.round(Library.findStartingF() / (Library.SAMPLE_RATE / (fftData.length))));
-        Log.d(TAG, "startIDX: " + startIdx);
+        //Log.d(TAG, "startIDX: " + startIdx);
 
 
         // The actual decoding / interpreting the signals --------------------------------------- //
@@ -217,7 +251,7 @@ class Demodulator implements Runnable{
         Complex[] in = Library.shortArrayToComplexArray(frameAudio);
         final Complex[] fftData = FFT.fft(in);
         final int startIdx = (int)(Math.round(Library.findStartingF() / (Library.SAMPLE_RATE / (fftData.length))));
-        Log.d(TAG, "startIDX: " + startIdx);
+        //Log.d(TAG, "startIDX: " + startIdx);
 
 
         // The actual decoding / interpreting the signals --------------------------------------- //
@@ -300,13 +334,13 @@ class Demodulator implements Runnable{
                 offset = virtualI;
             }
         }
-        Log.d(TAG, "Original angle at CS1 (bin433): " + phase[433]);
-        Log.d(TAG, "0:" + SC1.calcVirtualPhase(0) + "  2: " + SC1.calcVirtualPhase(2));
+        //Log.d(TAG, "Original angle at CS1 (bin433): " + phase[433]);
+        //Log.d(TAG, "0:" + SC1.calcVirtualPhase(0) + "  2: " + SC1.calcVirtualPhase(2));
         //Log.d(TAG, "0:" + SC2.calcVirtualPhase(0) + "  2: " + SC2.calcVirtualPhase(2));
-        Log.d(TAG, "minDiff: " + minDiff + "   located at virtual index offset: " + offset);
+        //Log.d(TAG, "minDiff: " + minDiff + "   located at virtual index offset: " + offset);
 
 
-        // Deocode the phases
+        // Decode the phases
         sb = new StringBuffer();
         double cur;
 
@@ -344,25 +378,16 @@ class Demodulator implements Runnable{
         }
         String bitsP = sb.toString();
 
-
-
         String bits = zip(bitsA, bitsP); // Just a simple interleave
-
-        //check after ECC checking
-        String eccCheckedString = ECC.eccChecking(bits);
-        String extractedData = ECC.eccDataExtraction(eccCheckedString);
-        eccString.append(extractedData);
-
-
-        String uncheckedString = ECC.eccDataExtraction(bits.substring(0, bits.length()-1));
-        return uncheckedString;
+        return bits;
     }
 
 
     // Dr. Novak
     // Find hail signal in this data
-    public int findHail(short[] data) {
-        // Maybe look for header with FFT?
+    private int findHail(short[] data) {
+        // This function is kind of heavy and should not be done frequently.ß
+
         // Look for header with xcorr
         // Make hail signal (known / ground truth)
         short[] known = Library.makeHail(Library.HAIL_TYPE_SWEEP);
@@ -379,12 +404,21 @@ class Demodulator implements Runnable{
             //Log.d(TAG, "xcorr: " + xcorr);
         }
 
+        // Envelope
+        Complex[] env = Hilbert.transform(xcorrData);
 
-        int maxIndex = getMaxIndex(xcorrData);
-        // Just a complete guess to try to make things better! :)
-        // Based on the matlab plots, it would seem like this needs to be -10?
-        // However, maxIndex - 10 makes the error rate worse sooo. ¯\_(ツ)_/¯
-        int ans = maxIndex - 0;
+        // Find location of maximum value in envelop
+        double max = Double.MIN_VALUE;
+        int maxIdx = 0;
+        for(int i = 0; i < data.length; i++){
+            double cur = env[i].abs();
+            if(cur > max){
+                maxIdx = i;
+                max = cur;
+            }
+        }
+
+        int ans = maxIdx - 0;
         return ans;
     }
 

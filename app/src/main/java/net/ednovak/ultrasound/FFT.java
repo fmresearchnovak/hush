@@ -135,6 +135,34 @@ public class FFT {
         return cconvolve(a, b);
     }
 
+
+    // Added by Dr. Novak.  See information about this algorithm here:
+    // https://en.wikipedia.org/wiki/Goertzel_algorithm
+    /*  Incomplete!
+    public static Complex[] goertzel(short[] data, double[] targets){
+        // Uses the Goertzel algorithm to compute the FFT at the specific (targets) frequencies.
+        // Returns the FFT bins corresponding to the target frequencies only.  More efficient
+        // than a full FFT across the entire spectrum and more accurate it terms of the specific
+        // frequencies given in the targets array.
+        int i = 0; // temporary
+
+        double w  = targets[i] * ( (Math.PI*2) / Library.SAMPLE_RATE);
+        double[] tmp = new double[data.length];
+        tmp[0] = data[0];
+        tmp[1] = data[1] + 2 * Math.cos(w) * tmp[0];
+        for(int j = 2; j < tmp.length; j++) {
+            tmp[j] = data[j] + 2 * Math.cos(w) * tmp[j - 1] - tmp[j - 2];
+        }
+
+        double[] output = new double[tmp.length];
+        double exp =
+        output[0] = tmp[0] - Math.E
+        for(int j = 1; j < output.length; j++){
+            output[]
+        }
+    }
+    */
+
     // display an array of Complex numbers to standard output
     //public static void show(Complex[] x, String title) {
     //    StdOut.println(title);

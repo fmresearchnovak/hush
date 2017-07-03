@@ -29,7 +29,8 @@ import junit.framework.Test;
 public class Send extends AppCompatActivity {
 	private final static String TAG = Send.class.getName();
 
-	private ArrayList<Short> audio;
+    // Stops this from crashing in the AsyncTask becuase now audio is never null.
+	private ArrayList<Short> audio = new ArrayList<Short>();
     private int mode;
 
     @Override
@@ -125,16 +126,19 @@ public class Send extends AppCompatActivity {
 	public void genPacket(View v){
         // Generate bit sequence to be sent
         String binData = genPacketBinary();
-        storeBits(binData); // store the bits in a file
+        //storeBits(binData); // store the bits in a file
 
-        // I will definitely not have > SHORT.MAX_VALUE frames in a packet
-        // It isn't strictly necessary to give the exact allocation size of the audio ArrayList
         int bitsPerFrame = Library.bitsPerFrame(mode);
-
-        short numFrames = (short)Math.ceil(binData.length() / (double)bitsPerFrame);
+        short numFrames = 3;
+        //short numFrames = (short)Math.ceil(binData.length() / (double)bitsPerFrame);
         Log.d(TAG, "Creating " + numFrames + " frames");
         audio = new ArrayList<Short>(Library.HAIL_SIZE + (Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2)) * numFrames);
 
+        // Little experiment for samsung phones, add a bunch of silence at the front
+
+        for(int i = 0; i < Library.FOOTER_SIZE; i++) {
+            audio.add((short)0);
+        }
 
         // ---- Header -------------------------------------------------------------------------- //
         short[] hail = Library.makeHail(Library.HAIL_TYPE_SWEEP);
@@ -144,40 +148,28 @@ public class Send extends AppCompatActivity {
         // -------------------------------------------------------------------------------------- //
 
 
-
         // ---- Frames -------------------------------------------------------------------------- //
-
-
         int s;
         int e;
         for(int i = 0; i < numFrames; i++){
-            Log.d(TAG, "Frame " + i);
-
-
-            int numParityBits = ECC.calcNumParityBits(binData.length()/3);
-            int dataBitsPerFrame = bitsPerFrame - numParityBits-1;
+            int parityBitsPerFrame = ECC.calcNumParityBits(binData.length()/3); // per frame
+            int dataBitsPerFrame = bitsPerFrame - parityBitsPerFrame - 1; // additional -1 for overall parity bit
 
             s = i * dataBitsPerFrame;
             e = Math.min(((i * dataBitsPerFrame) + dataBitsPerFrame), binData.length());
             String curFrameBinary = binData.substring(s, e);
 
-            Log.d(TAG, "Current Frame Size : " + String.valueOf(curFrameBinary.length()));
+            Log.d(TAG, "Frame " + i + " containing " +  String.valueOf(curFrameBinary.length()) + " bits.");
 
             //ECC implementation
-            String eccImplementedString = ECC.eccImplementation(curFrameBinary, numParityBits);
+            String eccImplementedString = ECC.eccImplementation(curFrameBinary, parityBitsPerFrame);
 
-
-            Log.d(TAG, "Original binary: " + curFrameBinary);
-            Log.d(TAG, "ECC Implemented: " + eccImplementedString);
+            //Log.d(TAG, "Original binary: " + curFrameBinary);
+            Log.d(TAG, "Final frame binary (after ECC and after size field in frame 1)");
+            Log.d(TAG, eccImplementedString);
 
             appendFrame(eccImplementedString);
         }
-
-
-
-
-
-
         // -------------------------------------------------------------------------------------- //
 
 
@@ -196,7 +188,7 @@ public class Send extends AppCompatActivity {
         // -------------------------------------------------------------------------------------- //
 
 
-        // Done print some debug stuff
+        // Done, print some debug stuff
         Log.d(TAG, "Total length in samples: " + audio.size());
         // Write the signal to a file.
         short[] packet = new short[audio.size()];
@@ -292,12 +284,15 @@ public class Send extends AppCompatActivity {
         String appendString = "";
         if(bitString.length() < 431){
             appendString = new String(new char[431-bitString.length()]).replace("\0", "0");
+        }
 
+        if(bitString.length() > 431){
+            throw new IllegalArgumentException("Maximum packet data size is 431!");
         }
 
         // Add the extra size field bits
 
-        Log.d(TAG, "sField    : " + sField + "Size is " + String.valueOf(Integer.parseInt(sField, 2)));
+        Log.d(TAG, "sField    : " + sField + " data_binary size is " + String.valueOf(Integer.parseInt(sField, 2)));
         Log.d(TAG, "data      : " + bitString);
         Log.d(TAG, "Original bitString length: " + bitString.length());
         bitString = sField + bitString;
@@ -441,6 +436,7 @@ public class Send extends AppCompatActivity {
         // DRY to create an AT instance.
 		protected Void doInBackground(Void... a) {
             Log.d(TAG, "playing in background");
+
             int sizeInBytes = audio.size() * 2;
             AudioTrack at = Library.getAudioTrack(sizeInBytes);
             short[] primitiveAudio = Library.ShortListToArray(audio);
@@ -469,9 +465,10 @@ public class Send extends AppCompatActivity {
             return null;
         }
 
-        protected void onProgressUpdate(Integer prog){
-            super.onProgressUpdate(prog);
-            pb.setProgress(prog);
+        protected void onProgressUpdate(Integer... prog){
+            int p = prog[0];
+            super.onProgressUpdate(p);
+            pb.setProgress(p);
         }
 
         // This is not called until playing is done thanks to the while

@@ -15,8 +15,7 @@ import static net.ednovak.ultrasound.Library.MODE_LONG;
 public final class Tests {
     private final static String TAG = Tests.class.getName().toString();
 
-
-
+    private final static String test431 = "000111001011111010010110001111100010111011000100101111100010101100001011000011000011011001101100001011000001001100011100110011110011101010101010101000011010011001100000111110111000001001010010111011111010110000111110001111010011000110011110010000100011011010110110101110110011001000010001011011111001000111000101110111111011101110010111001000010010110110101001011010011110110001100001100011111101100100011101111000010101011110111011111110110001010101100100011101011011";
     private final static Complex[] FFTtestIn = {new Complex(16891, 0), new Complex(15934, 0), new Complex(-7063, 0), new Complex(10189, 0), new Complex(-21549, 0), new Complex(13503, 0), new Complex(-30682, 0), new Complex(-14620, 0)};
     //private final static float[] testIn = {16891, 15934, -7063, 10189, -21549, 13503, -30682, -14620};
     private final static Complex[] FFTtestAns = {new Complex(-17395, 0), new Complex(22616, -42880), new Complex(33087, -33868), new Complex(54264, 4358), new Complex(-67410, 0), new Complex(54264, -4358), new Complex(33087, 33868), new Complex(22616, 42880)};
@@ -236,6 +235,7 @@ public final class Tests {
 
     public static void analyzeError(String binary, int mode){
 
+        Log.d(TAG, "--- Pre ECC Errors ---------------------------------------");
 
 
         if(mode == MODE_LONG){
@@ -251,7 +251,7 @@ public final class Tests {
         String bitsP = unzipped[1];
 
         // unzip ground truth
-        String gndTruth = Library.genSizeField(binary.length()-10, Library.MODE_SHORT) + Library.getRandomBits(431); // Just assume it's this one for now
+        String gndTruth =  new String(Tests.test431);
         String[] gndUnzipped = unzip(gndTruth);
         String gndA = gndUnzipped[0];
         String gndP = gndUnzipped[1];
@@ -296,6 +296,7 @@ public final class Tests {
         Log.d(TAG, "errs: " + errors);
         Log.d(TAG, "Error Locations: " + errorLocations);
         Log.d(TAG, "Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
+        Log.d(TAG, "------------------------------------------------------");
 
     }
 
