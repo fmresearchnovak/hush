@@ -142,7 +142,7 @@ class Demodulator implements Runnable{
                 a_data.eat(startGuess);
 
                 StringBuilder sb = new StringBuilder();
-
+                StringBuilder sbECC = new StringBuilder();
 
                 //Test
                 for(int i = 0; i < numFrames; i++) {
@@ -151,7 +151,9 @@ class Demodulator implements Runnable{
 
 
                     if(mode == Library.MODE_SHORT) {
-                        sb.append(decode_short(frame));
+                        String unchecked = decode_short(frame);
+                        sb.append(unchecked);
+                        sbECC.append(ECC.eccCheckandExtract(unchecked));
                     } else if(mode == Library.MODE_LONG) {
                         sb.append(decode_long(frame));
                     }
@@ -165,14 +167,8 @@ class Demodulator implements Runnable{
 
 
                 // ECC
-                //String eccCheckedString = ECC.eccChecking(binary);
-                //String extractedData = ECC.eccDataExtraction(eccCheckedString);
 
-                //String uncheckedString = ECC.eccDataExtraction(bits.substring(0, bits.length()-1));
-
-                //Tests.analyzeError(binary, mode);
-                //Tests.analyzeAfterECCError(extractedData);
-                //Tests.analyzeAfterECCError(eccCheckedString);
+                Tests.analyzeAfterECCError(sbECC.toString());
 
                 // ------------------------------------------------------------------------------ //
 

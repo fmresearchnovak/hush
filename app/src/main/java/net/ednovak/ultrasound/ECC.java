@@ -11,8 +11,17 @@ import java.util.ArrayList;
 
 public class ECC {
 
+    //ECC class use guide:
+    //Implementation: take a original data string and use calcNumParityBits to get the number of parity bits needed and use eccImplementation to implement ecc
+    //Check&Extract: take a ecc-implemented data string to use eccCheckandExtract to get the original and checked data string
+
     private final static String TAG = ECC.class.getName();
 
+    /**
+     * Calculate the number of parity bits needed for the data string (does not include the overall parity bit)
+     * @param stringLength : the original data string's length
+     * @return : the number of ecc bits needed for the data string
+     */
     public static int calcNumParityBits(int stringLength){
 
         //Calculate how many parity bits needed
@@ -24,7 +33,11 @@ public class ECC {
 
     }
 
-
+    /**
+     * Get the value of the overall parity bits
+     * @param eccImplementedString: the ecc-implemented string
+     * @return : the value of the overall parity bit (either 1 or 0)
+     */
     public static String eccGetOverallParityBits(String eccImplementedString){
 
         int sum = 0;
@@ -40,10 +53,14 @@ public class ECC {
         }
     }
 
-
+    /**
+     * Insert ecc bits and one overall parity bit into a data string
+     * @param originalData : original data string
+     * @param numParityBits : the number of parity/ecc bits needed
+     * @return a ecc implement string including the overall parity bit
+     */
     public static String eccImplementation(String originalData, int numParityBits){
 
-        //Log.d(TAG, "NumParity bits: " + String.valueOf(numParityBits));
         //insert the parity bits into the data bits
         StringBuilder outputString = new StringBuilder("");
 
@@ -53,19 +70,14 @@ public class ECC {
             outputString.append("0");
 
             outputString.append(originalData.substring(subStringIndex, Math.min((subStringIndex + (int)Math.pow(2,i)-1),originalData.length())));
-            //Log.d(TAG, "Added: "+ originalData.substring(subStringIndex, Math.min((subStringIndex + (int)Math.pow(2,i)-1),originalData.length())));
             subStringIndex = subStringIndex + (int)Math.pow(2,i)-1;
         }
 
 
         int newECCStringLength = outputString.length();
-
-        //Log.d(TAG, "ECC String length: " + String.valueOf(newECCStringLength));
-
         //implement the values of the parity bits
 
-        //Test
-        StringBuilder test = new StringBuilder();
+
 
         for(int i = 0; i < numParityBits; i++){
 
@@ -91,19 +103,16 @@ public class ECC {
                 index = index + step;
             }
 
-            //Log.d(TAG, "sum is : " + String.valueOf(sum) + "; integer value is : " + String.valueOf(Integer.valueOf(originalData.substring((int)Math.pow(2, i)-1, (int)Math.pow(2, i)-1+1))));
+
 
             outputString.setCharAt((int)Math.pow(2, i)-1, Character.forDigit(sum%2, 10));
-            test.append(Character.forDigit(sum%2, 10) + " ,");
+
 
         }
 
         //add the overall parity bit
         String overallParityBits = eccGetOverallParityBits(outputString.toString());
         outputString.append(overallParityBits);
-
-
-        //Log.d(TAG, "Implementation Parity bits are : " + test.toString());
 
         return outputString.toString();
 
@@ -202,8 +211,6 @@ public class ECC {
 
     }
 
-
-
     public static String eccDataExtraction(String originalData){
 
         //Calculate how many parity bits needed
@@ -221,6 +228,21 @@ public class ECC {
         }
 
         return dataString.toString();
+    }
+
+
+    /**
+     * Check an ecc implemented string and correct 1 bit error
+     * @param uncheckedString : must be a ecc-implemented string
+     * @return the original and corrected data
+     */
+    public static String eccCheckandExtract(String uncheckedString){
+
+        String checkedString = eccChecking(uncheckedString);
+        String extractedString = eccDataExtraction(checkedString);
+
+        return extractedString;
+
     }
 
 }

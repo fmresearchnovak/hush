@@ -311,13 +311,6 @@ public final class Tests {
         Log.d(TAG, "ECC Error Locations: " + errorLocations);
         Log.d(TAG, "ECC Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
 
-
-        //Text message test
-        Log.d(TAG, "---------------------------TEXT MESSAGE TEST----------------");
-        decodeTextMessageTest(binary);
-
-
-
     }
 
     public static void decodeTextMessageTest(String binary){
