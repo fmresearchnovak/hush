@@ -16,6 +16,7 @@ public final class Tests {
     private final static String TAG = Tests.class.getName().toString();
 
     private final static String test431 = "000111001011111010010110001111100010111011000100101111100010101100001011000011000011011001101100001011000001001100011100110011110011101010101010101000011010011001100000111110111000001001010010111011111010110000111110001111010011000110011110010000100011011010110110101110110011001000010001011011111001000111000101110111111011101110010111001000010010110110101001011010011110110001100001100011111101100100011101111000010101011110111011111110110001010101100100011101011011";
+    private final static String test202 = "111010011010110001011000111110001011101100010010111110001010100100101100001101000000111011001010110000101100000010011000111001100111001110101101010101010000000111001101100100111101110000001001000101110111110101100001111110001110100111";
     private final static Complex[] FFTtestIn = {new Complex(16891, 0), new Complex(15934, 0), new Complex(-7063, 0), new Complex(10189, 0), new Complex(-21549, 0), new Complex(13503, 0), new Complex(-30682, 0), new Complex(-14620, 0)};
     //private final static float[] testIn = {16891, 15934, -7063, 10189, -21549, 13503, -30682, -14620};
     private final static Complex[] FFTtestAns = {new Complex(-17395, 0), new Complex(22616, -42880), new Complex(33087, -33868), new Complex(54264, 4358), new Complex(-67410, 0), new Complex(54264, -4358), new Complex(33087, 33868), new Complex(22616, 42880)};
@@ -214,7 +215,7 @@ public final class Tests {
 
 
     private static void analyzeErrorLong(String binary){
-        String gndTruth = Library.genSizeField(7, MODE_LONG) + Library.getRandomBits(7);
+        String gndTruth = Tests.test202;
 
 
         // Amplitude analysis
@@ -224,8 +225,7 @@ public final class Tests {
         Log.d(TAG, "err A: " + errA);
         for(int i = 0; i < errA.length(); i++){
             if(errA.charAt(i) == '1'){
-                Log.d(TAG, "First error on bit at index number: " + i);
-                break;
+                Log.d(TAG, "Error on bit at index number: " + i);
             }
         }
         Log.d(TAG, " " + Library.errPer(errA) + "%");
@@ -251,7 +251,7 @@ public final class Tests {
         String bitsP = unzipped[1];
 
         // unzip ground truth
-        String gndTruth =  new String(Tests.test431);
+        String gndTruth =  Tests.test431;
         String[] gndUnzipped = unzip(gndTruth);
         String gndA = gndUnzipped[0];
         String gndP = gndUnzipped[1];
@@ -300,8 +300,10 @@ public final class Tests {
 
     }
 
-    public static void analyzeAfterECCError(String binary){
-        String gndTruth = Library.genSizeField(431, Library.MODE_SHORT) + Library.getRandomBits(431);
+    public static void analyzeAfterECCError(String binary, int mode){
+        int l = Library.getL(mode);
+
+        String gndTruth = Library.genSizeField(l, mode) + Library.getRandomBits(l);
         // Entire packet analysis and ECC comparison
         Log.d(TAG, "ECC bits: " + binary);
         Log.d(TAG, "gnd : " + gndTruth);

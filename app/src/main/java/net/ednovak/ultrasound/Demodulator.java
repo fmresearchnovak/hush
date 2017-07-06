@@ -149,14 +149,15 @@ class Demodulator implements Runnable{
                     Log.d(TAG, "Decoding frame: " + i);
                     short[] frame = a_data.slice(0, Library.DATA_FRAME_SIZE+1);
 
-
+                    String unchecked = null;
                     if(mode == Library.MODE_SHORT) {
-                        String unchecked = decode_short(frame);
-                        sb.append(unchecked);
-                        sbECC.append(ECC.eccCheckandExtract(unchecked));
+                        unchecked = decode_short(frame);
+
                     } else if(mode == Library.MODE_LONG) {
-                        sb.append(decode_long(frame));
+                        unchecked = decode_long(frame);
                     }
+                    sb.append(unchecked);
+                    sbECC.append(ECC.eccCheckandExtract(unchecked));
 
                     // Eat this frame and the ending ramp and the starting ramp of the next frame
                     a_data.eat(Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2));
@@ -168,7 +169,7 @@ class Demodulator implements Runnable{
 
                 // ECC
 
-                Tests.analyzeAfterECCError(sbECC.toString());
+                Tests.analyzeAfterECCError(sbECC.toString(), mode);
 
                 // ------------------------------------------------------------------------------ //
 
@@ -207,7 +208,9 @@ class Demodulator implements Runnable{
 
         StringBuffer sb = new StringBuffer();
         double thresh;
-        for(int i = startIdx; i <= 425; i = i + 2){
+        for(int i = startIdx; i < 487; i++){
+
+
             int cur = amp[i];
             double upAVG = upList.getAVG();
             double downAVG = downList.getAVG();
@@ -219,16 +222,21 @@ class Demodulator implements Runnable{
             //Log.d(TAG, "downList: " + downList);
             //Log.d(TAG, "i: " + i + "  f: " + i * Library.SubCarrier_DELTA + "  cur: " + cur + "  thresh: " + thresh + "  upAvg: " + upAVG + "  downAvg: " + downAVG);
 
-
-            // Actual decoding of sub-carriers
-            if(cur > thresh){ // 1
-                sb.append("1");
-                if(cur < (BETA * upAVG)){
-                    upList.insert(cur);
+            // Just a little funny business for the calibration sub-carriers
+            // Calibration sub-carriers
+            if(i == 433 || i == 460){ // Bin of the calibration sub-carriers, skip
+                continue;
+            } else {
+                // Actual decoding of sub-carriers
+                if (cur > thresh) { // 1
+                    sb.append("1");
+                    if (cur < (BETA * upAVG)) {
+                        upList.insert(cur);
+                    }
+                } else { // 0
+                    sb.append("0");
+                    downList.insert(cur);
                 }
-            } else { // 0
-                sb.append("0");
-                downList.insert(cur);
             }
         }
 

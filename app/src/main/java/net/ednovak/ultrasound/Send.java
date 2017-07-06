@@ -136,9 +136,9 @@ public class Send extends AppCompatActivity {
 
         // Little experiment for samsung phones, add a bunch of silence at the front
 
-        for(int i = 0; i < Library.FOOTER_SIZE; i++) {
-            audio.add((short)0);
-        }
+        //for(int i = 0; i < Library.FOOTER_SIZE; i++) {
+        //    audio.add((short)0);
+        //}
 
         // ---- Header -------------------------------------------------------------------------- //
         short[] hail = Library.makeHail(Library.HAIL_TYPE_SWEEP);
@@ -152,7 +152,9 @@ public class Send extends AppCompatActivity {
         int s;
         int e;
         for(int i = 0; i < numFrames; i++){
+
             int parityBitsPerFrame = ECC.calcNumParityBits(binData.length()/3); // per frame
+            Log.d(TAG, "parity Bits: " + parityBitsPerFrame);
             int dataBitsPerFrame = bitsPerFrame - parityBitsPerFrame - 1; // additional -1 for overall parity bit
 
             s = i * dataBitsPerFrame;
@@ -280,27 +282,31 @@ public class Send extends AppCompatActivity {
         }
 
 
-        //TODO currently it follows that every signal has 3-packet length so that each signal that is less than that length should append 0s
+        String padded = pad(bitString, mode); // Pad to fill packet (all frames)
+        String preECC = sField + padded; // Add the sizefield bits
+
+
+        Log.d(TAG, "data length: " + bitString.length() + "   " + bitString);
+        Log.d(TAG, "padded String length: " + padded.length() + "   " + padded);
+        Log.d(TAG, "sField length: "+ sField.length() + "   " + sField );
+        Log.d(TAG, "preECC bits length: " + preECC.length() + "    " + preECC);
+
+        return preECC;
+    }
+
+    private String pad(String input, int mode){
+        int l = Library.getL(mode);
+
         String appendString = "";
-        if(bitString.length() < 431){
-            appendString = new String(new char[431-bitString.length()]).replace("\0", "0");
+        if(input.length() < l){
+            appendString = new String(new char[l-input.length()]).replace("\0", "0");
+            input = input + appendString;
         }
 
-        if(bitString.length() > 431){
-            throw new IllegalArgumentException("Maximum packet data size is 431!");
+        if(input.length() >l ){
+            throw new IllegalArgumentException("Maximum packet data size is: " + l);
         }
-
-        // Add the extra size field bits
-
-        Log.d(TAG, "sField    : " + sField + " data_binary size is " + String.valueOf(Integer.parseInt(sField, 2)));
-        Log.d(TAG, "data      : " + bitString);
-        Log.d(TAG, "Original bitString length: " + bitString.length());
-        bitString = sField + bitString;
-        bitString = bitString + appendString;   //append the 0s to ensure the overall length is 3-packet
-        Log.d(TAG, "bitString : " + bitString);
-        Log.d(TAG, "bitString length: " + bitString.length());
-
-        return bitString;
+        return input;
     }
 
 
@@ -349,29 +355,29 @@ public class Send extends AppCompatActivity {
 
     private ArrayList<SubCarrier> genFrameMapLong(String binary){
         Log.d(TAG, "Long Range (slow)");
-        // Each data frame in the long range version should encode 10 bits
-        assert(binary.length() == 10);
 
-        // There is only one frame / packet in this version.  So, the
-        // first frame / the packet encodes 3 size field bits and 7 data bits.
-        // Among the 7 data bits I plan to use 3 hamming code bits and 4 data bits
-        ArrayList<SubCarrier> map = new ArrayList<SubCarrier>(10);
+        // There is three frames / packet in this version.  So, the
+        // first frame in the packet encodes 7 size field bits (max value = 127) and 71 data bits.
+        // The second and third frame in the packet encode 0 size field bits and 78 data bits.
+        ArrayList<SubCarrier> map = new ArrayList<SubCarrier>(78);
         double curF = Library.findStartingF();
         double amp;
         double phase = 0;
         for(int i = 0; i < binary.length(); i++){
+            if( (int)curF == 18647 || (int)curF == 19810){
+                Log.d(TAG, curF + " calibration sub-carrier!");
+                SubCarrier freq = new SubCarrier(curF, Math.PI, Library.AMP_HIGH);
+                map.add(freq);
+                curF += Library.SubCarrier_DELTA;
+            }
+            // Ternary operator
             amp = binary.charAt(i) == '1' ? Library.AMP_HIGH : Library.AMP_LOW;
+
             Log.d(TAG, "f: " + String.format("%.3f", curF) + "   amp: " + amp + "   phase: " + phase);
             SubCarrier freq = new SubCarrier(curF, phase, amp);
             map.add(freq);
-            curF += (Library.SubCarrier_DELTA * 2.0); // Every other sub-carrier to help distinguish
+            curF += (Library.SubCarrier_DELTA);
         }
-
-        // Add the calibration sub-carrier 18648 (same as Carrier 1 in short-range / normal mode)
-        Log.d(TAG, "f: " + SubCarrier.CAL_1_FREQ + "   amp: " + 1.0 + "   phase: " + 0);
-        CalibrationSubCarrier csc = new CalibrationSubCarrier(SubCarrier.CAL_1_FREQ, 0);
-        map.add(csc);
-
         return map;
     }
 

@@ -607,6 +607,18 @@ public class Library {
         return per;
     }
 
+    public static int getL(int mode){
+        int l = 0;
+        if(mode == Library.MODE_SHORT){
+            l = 431;
+        } else if (mode == Library.MODE_LONG){
+            l = 202;
+        } else {
+            throw new IllegalStateException("Invalid mode: " + mode);
+        }
+        return l;
+    }
+
 
     // The size field should indicate how many payload sub-carriers are actually
     // being used to transmit the message.  With 1024 samples, I'll use 80 sub-carriers.
@@ -628,7 +640,7 @@ public class Library {
         if(mode == MODE_SHORT){
             maxL = 10;
         } else if (mode == MODE_LONG){
-            maxL = 3;
+            maxL = 8;
         }
 
         if (binary.length() <= maxL) {
@@ -665,7 +677,7 @@ public class Library {
     public static int bitsPerFrame(int curMode){
         // Consult the MAP .ods file for explanation
         if(curMode == MODE_LONG){
-            return 26;
+            return 78;
         } else if(curMode == MODE_SHORT){
             return 156;
         } else {
