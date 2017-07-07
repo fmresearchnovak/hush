@@ -266,8 +266,7 @@ public final class Tests {
         Log.d(TAG, "err A: " + errA);
         for(int i = 0; i < errA.length(); i++){
             if(errA.charAt(i) == '1'){
-                Log.d(TAG, "First error on bit at index number: " + i);
-                break;
+                Log.d(TAG, "Error at index number: " + i);
             }
         }
         Log.d(TAG, " " + Library.errPer(errA) + "%");
@@ -281,8 +280,7 @@ public final class Tests {
         Log.d(TAG, "err P: " + errP);
         for(int i = 0; i < errP.length(); i++){
             if(errP.charAt(i) == '1'){
-                Log.d(TAG, "First error on bit at index number: " + i);
-                break;
+                Log.d(TAG, "Error at index number: " + i);
             }
         }
         Log.d(TAG, " " + Library.errPer(errP) + "%");

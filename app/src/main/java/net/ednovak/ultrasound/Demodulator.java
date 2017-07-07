@@ -72,7 +72,7 @@ class Demodulator implements Runnable{
                 // When identified, I will need the hail signal starting at the beginning
                 // which is it's weakest point (in theory exactly 100 samples before
                 // the beginning of preChunk)
-                short[] preChunk = a_data.slice(100, 165);
+                short[] preChunk = a_data.slice(300, 1325);
 
 
                 // --- Option 1, using FFT and window ------------------------------------------- //
@@ -88,8 +88,8 @@ class Demodulator implements Runnable{
 
                 Complex[] in = Library.shortArrayToComplexArray(preChunk);
                 final Complex[] fftData = FFT.fft(in);
-                double valNeighbor = fftData[22].abs();
-                double valHail = fftData[26].abs();
+                double valNeighbor = fftData[400].abs();
+                double valHail = fftData[420].abs();
                 //Log.d(TAG, "amb: " + valAmbient + "   hail: " + valHail);
 
 
@@ -104,7 +104,7 @@ class Demodulator implements Runnable{
                 //int slope = (int)((valHail - valNeighbor) / 2);
                 double diff = valHail - valNeighbor;
 
-                if( diff > 500){
+                if( diff > 4000){
                     Log.d(TAG, "Hail signal heard!   valHail: " + valHail + "   valNeighbor: " + valNeighbor + "   diff: " + diff);
                     //Library.writeToFile("filtered" + recCount + ".pcm", filteredSignal);
                     //Library.writeToFile("unfiltered" + recCount + ".pcm", preChunk);
@@ -112,7 +112,7 @@ class Demodulator implements Runnable{
                     //a_data.eat(64);
                 } else{
                     // If this isn't loud enough there isn't a hail signal here and we can move forward
-                    a_data.eat(64);
+                    a_data.eat(1024 - 300);
                     //Log.d(TAG, "Ate 64");
                 }
                 break;
@@ -121,7 +121,7 @@ class Demodulator implements Runnable{
             // This means we've found the hail signal and we need to decode_short the subsequent data
             // of this packet
             case STATE_DECODING:
-                short[] data = a_data.slice(0, 513); // must be a power of two for findHail to finish
+                short[] data = a_data.slice(0, 1025); // must be a power of two for findHail to finish
                 int startGuess = findHail(data);
                 startGuess = startGuess + Library.HAIL_SIZE + Library.RAMP_SIZE;
                 Log.d(TAG, "startGuess: " + startGuess);

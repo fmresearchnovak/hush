@@ -177,6 +177,7 @@ public class Send extends AppCompatActivity {
 
 
         // ---- Quieting Footer ----------------------------------------------------------------- //
+        /*
         SubCarrier sc = new SubCarrier(21000, 0, 1, false);
         double[] footer = new double[Library.FOOTER_SIZE];
         sc.addTo(footer);
@@ -188,7 +189,7 @@ public class Send extends AppCompatActivity {
             newAmp = newAmp - ampDelta;
         }
         // -------------------------------------------------------------------------------------- //
-
+        */
 
         // Done, print some debug stuff
         Log.d(TAG, "Total length in samples: " + audio.size());
