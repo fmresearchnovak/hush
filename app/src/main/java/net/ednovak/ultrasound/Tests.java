@@ -97,7 +97,7 @@ public final class Tests {
     }
 
 
-    public static void FFT(){
+    public static void FFTTest(){
 
 		//Simple FFT test
 		int l = 1024;
@@ -156,6 +156,29 @@ public final class Tests {
         if(flag){
             Log.d(TAG, "Result Correct!");
         }
+    }
+
+    public static void newFFTTest(){
+        short[] in = new short[FFTtestIn.length];
+        for(int i = 0; i < in.length; i++){
+            in[i] = (short)(FFTtestIn[i].re());
+        }
+
+        NewFFT fourier = new NewFFT(in.length);
+        Complex[] ans = fourier.audioFFT(in);
+
+        boolean flag = true;
+        for(int i = 0; i < ans.length; i++){
+            if(!ans[i].equals(FFTtestAns[i])){
+                flag = false;
+                Log.d(TAG, "Result Incorrect!!  Index: " + i + "  ans[i]: " + ans[i] + "  testAns[i]: " + FFTtestAns[i]);
+            }
+        }
+
+        if(flag){
+            Log.d(TAG, "Result Correct!");
+        }
+
     }
 
     public static void FFTSinTest(){
@@ -219,18 +242,7 @@ public final class Tests {
 
 
         // Amplitude analysis
-        String errA = Library.getErrors(binary, gndTruth);
-        Log.d(TAG, "bitsA: " + binary);
-        Log.d(TAG, "gnd A: " + gndTruth);
-        Log.d(TAG, "err A: " + errA);
-        for(int i = 0; i < errA.length(); i++){
-            if(errA.charAt(i) == '1'){
-                Log.d(TAG, "Error on bit at index number: " + i);
-            }
-        }
-        Log.d(TAG, " " + Library.errPer(errA) + "%");
-        Log.d(TAG, " ");
-        Log.d(TAG, " ");
+        Library.printErrorAnalysis(binary, gndTruth);
     }
 
     public static void analyzeError(String binary, int mode){
@@ -242,8 +254,6 @@ public final class Tests {
             analyzeErrorLong(binary);
             return;
         }
-
-
 
         // Unzip binary
         String[] unzipped = unzip(binary);
@@ -258,58 +268,30 @@ public final class Tests {
 
         Log.d(TAG, "bitsA length: " + bitsA.length() + "   bitsP length: " + bitsP.length() + "   binary length: " + binary.length() + "   gndTruth length: " + gndTruth.length());
 
-
         // Amplitude analysis
-        String errA = Library.getErrors(bitsA, gndA);
-        Log.d(TAG, "bitsA: " + bitsA);
-        Log.d(TAG, "gnd A: " + gndA);
-        Log.d(TAG, "err A: " + errA);
-        for(int i = 0; i < errA.length(); i++){
-            if(errA.charAt(i) == '1'){
-                Log.d(TAG, "Error at index number: " + i);
-            }
-        }
-        Log.d(TAG, " " + Library.errPer(errA) + "%");
+        Log.d(TAG, "Amplitude Error");
+        Library.printErrorAnalysis(bitsA, gndA);
         Log.d(TAG, " ");
-
 
         // Phase analysis
-        String errP = Library.getErrors(bitsP, gndP);
-        Log.d(TAG, "bitsP: " + bitsP);
-        Log.d(TAG, "gnd P: " + gndP);
-        Log.d(TAG, "err P: " + errP);
-        for(int i = 0; i < errP.length(); i++){
-            if(errP.charAt(i) == '1'){
-                Log.d(TAG, "Error at index number: " + i);
-            }
-        }
-        Log.d(TAG, " " + Library.errPer(errP) + "%");
+        Log.d(TAG, "Phase Error");
+        Library.printErrorAnalysis(bitsP, gndP);
         Log.d(TAG, " ");
 
-        // Entire packet analysis and ECC comparison
-        Log.d(TAG, "bits: " + binary);
-        Log.d(TAG, "gnd : " + gndTruth);
-        String errors = Library.getErrors(binary, gndTruth);
-        String errorLocations = Library.getErrorLocation(binary, gndTruth);
-        Log.d(TAG, "errs: " + errors);
-        Log.d(TAG, "Error Locations: " + errorLocations);
-        Log.d(TAG, "Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
-        Log.d(TAG, "------------------------------------------------------");
+        // Entire packet analysis
+        Library.printErrorAnalysis(binary, gndTruth);
+        Log.d(TAG, "---------------------------------------------------------");
 
     }
 
     public static void analyzeAfterECCError(String binary, int mode){
-        int l = Library.getL(mode);
 
+        // Entire packet analysis after ECC comparison
+        Log.d(TAG, "--- Post ECC Errors -------------------------------------");
+        int l = Library.getL(mode);
         String gndTruth = Library.genSizeField(l, mode) + Library.getRandomBits(l);
-        // Entire packet analysis and ECC comparison
-        Log.d(TAG, "ECC bits: " + binary);
-        Log.d(TAG, "gnd : " + gndTruth);
-        String errors = Library.getErrors(binary, gndTruth);
-        String errorLocations = Library.getErrorLocation(binary, gndTruth);
-        Log.d(TAG, "ECC errs: " + errors);
-        Log.d(TAG, "ECC Error Locations: " + errorLocations);
-        Log.d(TAG, "ECC Error percentage: " + String.format("%2.3f", Library.errPer(errors)));
+        Library.printErrorAnalysis(binary, gndTruth);
+        Log.d(TAG, "---------------------------------------------------------");
 
     }
 

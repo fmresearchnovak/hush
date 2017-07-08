@@ -251,6 +251,18 @@ public class Library {
 
             y[i] = (short)cur; // loss of precision, I don't care.
         }
+
+
+        // New version may be faster because it does not create a new array
+        /*
+        for(int i = 0; i < x.length; i++){
+            double cur = 0;
+            for(int k = 0; k < b.length && k <= i; k++){
+                cur = cur + (b[k] * x[i-k]);
+            }
+            x[i] = (short)cur;
+        }
+        */
         return y;
 	}
 
@@ -392,7 +404,7 @@ public class Library {
     }
 
 
-    public static byte[] doubleArray2ByteArray(double[] data){
+    public static byte[] doubleArray2IntByteArray(double[] data){
         // To implement this I don't care about the values past the decimal point
         // and these values are very large (thousands and tens of thousands)
         // so, they're too big for shorts.  I will cast them to ints (4 bytes / int)
@@ -400,10 +412,10 @@ public class Library {
         ByteBuffer b = ByteBuffer.allocate(data.length * 4);
         b.order(ByteOrder.LITTLE_ENDIAN);
         for(int i = 0; i < data.length; i++){
+            //b.putDouble(data[i]);
             int tmp = (int)data[i];
-            //Log.d(TAG, "val: " + tmp);
+            Log.d(TAG, "val: " + tmp);
             b.putInt(tmp);
-
         }
         return b.array();
     }
@@ -581,12 +593,12 @@ public class Library {
     }
 
 
-    public static String getErrorLocation(String a, String b){
+    public static String getErrorLocations(String a, String b){
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < a.length(); i++){
             try {
                 if (a.charAt(i) != b.charAt(i)) {
-                    sb.append(String.valueOf(i) + " ,");
+                    sb.append(String.valueOf(i) + ", ");
                 }
             } catch (StringIndexOutOfBoundsException e1){
                 break;
@@ -714,5 +726,16 @@ public class Library {
         }
 
 
+    }
+
+
+    public static void printErrorAnalysis(String rec, String gnd){
+        String err = Library.getErrors(rec, gnd);
+        Log.d(TAG, "rec : " + rec);
+        Log.d(TAG, "gnd : " + gnd);
+        Log.d(TAG, "err : " + err);
+        String locations = Library.getErrorLocations(rec, gnd);
+        Log.d(TAG, "Errors at: " + locations);
+        Log.d(TAG, "Error Percentage: " + String.format("%2.4f",Library.errPer(err)) + "%");
     }
 }

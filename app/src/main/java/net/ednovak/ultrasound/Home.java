@@ -55,8 +55,8 @@ public class Home extends AppCompatActivity {
 
 		Log.d(TAG, "Ultrasound App Running!");
 
-
-		Library.TestHilbert();
+        //Tests.staticFFTTest();
+        //Tests.newFFTTest();
 	}
 
 	@Override
@@ -126,10 +126,11 @@ public class Home extends AppCompatActivity {
 			Log.d(TAG, "Stop recording.");
 			pThread.interrupt();
 			cThread.interrupt();
+            //updateUIThread.interrupt();
 
             signal.clearAnimation();
             signal.setVisibility(View.INVISIBLE);
-			//updateUIThread.interrupt();
+
 		}
 	}
 
@@ -207,10 +208,6 @@ public class Home extends AppCompatActivity {
                 DecimalFormat df = new DecimalFormat("#.0");
                 String perFormatted = df.format(per*100);
 				Log.d(TAG, "Buffer Capacity Remaining: " + perFormatted);
-
-                //TextView tv = (TextView)findViewById(R.id.home_tv_capacity_status);
-                //String s = "Buffer is: " + perFormatted + "% empty";
-                //tv.setText(s);
             }
         }
 	}

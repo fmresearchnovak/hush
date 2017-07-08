@@ -17,12 +17,11 @@ class Demodulator implements Runnable{
     // FYI: 50 samples at 44100 = 0.0011337 seconds = 1.1337 ms ELITE!
     private int numFrames = 3;
     private boolean running = false;
-
-    private final static int STATE_LISTENING = 1;
-    private final static int STATE_DECODING = 2;
-    private int STATE = 1;
-    private long transitionTS;
+    private final short[] hail;
     private int mode;
+    private int recNumber = 0;
+
+    private NewFFT fourier = new NewFFT(1024);
 
     //Test
     StringBuilder eccString;
@@ -36,6 +35,7 @@ class Demodulator implements Runnable{
             throw new IllegalArgumentException("Invalid MODE");
         }
         mode = newMode;
+        hail = Library.makeHail(Library.HAIL_TYPE_SWEEP); // pre-compute hail for better efficiency
 
     }
 
@@ -47,6 +47,13 @@ class Demodulator implements Runnable{
 
     public void run() {
         running = true;
+
+        // Eat the first few samples prevent initial touch false positive
+        try{
+            a_data.eat((int)Library.SAMPLE_RATE);
+        } catch (InterruptedException e) {};
+
+
         while (running) {
             //Log.d(TAG, " ");
             //Log.d(TAG, "Demod Runnable iteration");
@@ -64,122 +71,76 @@ class Demodulator implements Runnable{
     }
 
     private void readQueue() throws InterruptedException{
-        switch(STATE){
-            case STATE_LISTENING:
-                // Get a chunk;  I grab 100 - 165 because I have to use a power of 2 and
-                // This guaranteed to not possibly "miss" the strongest part of the hail signal
-                // which is the middle 100 samples long (the entire hail is 300 samples).
-                // When identified, I will need the hail signal starting at the beginning
-                // which is it's weakest point (in theory exactly 100 samples before
-                // the beginning of preChunk)
-                short[] preChunk = a_data.slice(300, 1325);
 
+        short[] preChunk = a_data.slice(50, 351);  // I could try a larger range
 
-                // --- Option 1, using FFT and window ------------------------------------------- //
-                // Old way, use filter
-                // Use HighPass FIR filter to muffle low-freq noise
-                //short[] filteredSignal = Library.FIR(preChunk);
-                Library.hannWindow(preChunk);
+        // Too heavy for samsung phone
+        //preChunk = Library.FIR(preChunk);
 
-                // This could be more efficient by using the Goertzel algorithm to compute
-                // the FFT only for the values we're interested in (since we're reading only
-                // two bins.  Also, the Goertzel algorithm would be more accurate; calculating
-                // the response of exactly 18k.
+        double c = correlation(hail, preChunk, 0);
 
-                Complex[] in = Library.shortArrayToComplexArray(preChunk);
-                final Complex[] fftData = FFT.fft(in);
-                double valNeighbor = fftData[400].abs();
-                double valHail = fftData[420].abs();
-                //Log.d(TAG, "amb: " + valAmbient + "   hail: " + valHail);
-
-
-                // --- Old method used RMS, that approach is not ideal, even with a great filter //
-                // Test RMS of this chunk, the threshold could use some adjusting
-                // New filter coefficients should help cut out false positives and false negatives
-                //double rms = Library.RMS(0, filteredSignal.length, filteredSignal);
-                //double per = rms / Short.MAX_VALUE;
-                //Log.d(TAG, "RMS: " + rms + "    per: " + per);
-                // ------------------------------------------------------------------------------ //
-
-                //int slope = (int)((valHail - valNeighbor) / 2);
-                double diff = valHail - valNeighbor;
-
-                if( diff > 4000){
-                    Log.d(TAG, "Hail signal heard!   valHail: " + valHail + "   valNeighbor: " + valNeighbor + "   diff: " + diff);
-                    //Library.writeToFile("filtered" + recCount + ".pcm", filteredSignal);
-                    //Library.writeToFile("unfiltered" + recCount + ".pcm", preChunk);
-                    incState();
-                    //a_data.eat(64);
-                } else{
-                    // If this isn't loud enough there isn't a hail signal here and we can move forward
-                    a_data.eat(1024 - 300);
-                    //Log.d(TAG, "Ate 64");
-                }
-                break;
-
+        if(Math.abs(c) < 0.50){
+            a_data.eat(10); // No packet here, skip forward
+        } else {
 
             // This means we've found the hail signal and we need to decode_short the subsequent data
             // of this packet
-            case STATE_DECODING:
-                short[] data = a_data.slice(0, 1025); // must be a power of two for findHail to finish
-                int startGuess = findHail(data);
-                startGuess = startGuess + Library.HAIL_SIZE + Library.RAMP_SIZE;
-                Log.d(TAG, "startGuess: " + startGuess);
+            short[] data = a_data.slice(0, 2049); // must be a power of two for findHail to finish
+            int startGuess = findHail(data);
+            startGuess = startGuess + Library.HAIL_SIZE + Library.RAMP_SIZE;
+            Log.d(TAG, "startGuess: " + startGuess);
 
-                // -- Dump the audio of this packet for debugging purposes ---------------------- //
-                // Record a chunk of audio, this causes weirdness when "insertFromFile" is
-                // called with the same file.  It does that repeating thing like when you
-                // point two mirrors at each other.
-                // The extra 100 samples is not really necessary.
-                int L = startGuess + (Library.RAMP_SIZE * 2 * numFrames) + (Library.DATA_FRAME_SIZE * numFrames) + Library.FOOTER_SIZE + 100;
-                short[] chunk = a_data.slice(0, L);
-                Library.writeToFile("recent.pcm", Library.shortArray2ByteArray(chunk));
-                // ------------------------------------------------------------------------------ //
+            // -- Dump the audio of this packet for debugging purposes ---------------------- //
+            // Record a chunk of audio, this causes weirdness when "insertFromFile" is
+            // called with the same file.  It does that repeating thing like when you
+            // point two mirrors at each other.
+            // The extra 100 samples is not really necessary.
+            int L = startGuess + (Library.RAMP_SIZE * 2 * numFrames) + (Library.DATA_FRAME_SIZE * numFrames) + Library.FOOTER_SIZE;
+            short[] chunk = a_data.slice(0, L);
+            Library.writeToFile("recent" + (recNumber++) +".pcm", Library.shortArray2ByteArray(chunk));
+            // ------------------------------------------------------------------------------ //
 
 
-                // ---- Decode the Frames ------------------------------------------------------- //
-                // Eat Hail and first ramp (before first frame)
-                a_data.eat(startGuess);
+            // ---- Decode the Frames ------------------------------------------------------- //
+            // Eat Hail and first ramp (before first frame)
+            //Log.d(TAG, "EATING: " + startGuess);
+            a_data.eat(startGuess);
 
-                StringBuilder sb = new StringBuilder();
-                StringBuilder sbECC = new StringBuilder();
+            StringBuilder sb = new StringBuilder();
+            StringBuilder sbECC = new StringBuilder();
 
-                //Test
-                for(int i = 0; i < numFrames; i++) {
-                    Log.d(TAG, "Decoding frame: " + i);
-                    short[] frame = a_data.slice(0, Library.DATA_FRAME_SIZE+1);
+            //Test
+            for(int i = 0; i < numFrames; i++) {
+                Log.d(TAG, "Decoding frame: " + i);
+                short[] frame = a_data.slice(0, Library.DATA_FRAME_SIZE+1);
 
-                    String unchecked = null;
-                    if(mode == Library.MODE_SHORT) {
-                        unchecked = decode_short(frame);
+                String unchecked = null;
+                if(mode == Library.MODE_SHORT) {
+                    unchecked = decode_short(frame);
 
-                    } else if(mode == Library.MODE_LONG) {
-                        unchecked = decode_long(frame);
-                    }
-                    sb.append(unchecked);
-                    sbECC.append(ECC.eccCheckandExtract(unchecked));
-
-                    // Eat this frame and the ending ramp and the starting ramp of the next frame
-                    a_data.eat(Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2));
+                } else if(mode == Library.MODE_LONG) {
+                    unchecked = decode_long(frame);
                 }
+                sb.append(unchecked);
+                sbECC.append(ECC.eccCheckandExtract(unchecked));
 
-                String binary = sb.toString();
-                Tests.analyzeError(binary, mode);
+                // Eat this frame and the ending ramp and the starting ramp of the next frame
+                //Log.d(TAG, "EATING " + (Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2)));
+                a_data.eat(Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2));
+            }
+
+            String binary = sb.toString();
+            Tests.analyzeError(binary, mode);
+            Log.d(TAG, " ");
+            Tests.analyzeAfterECCError(sbECC.toString(), mode);
+
+            // ------------------------------------------------------------------------------ //
 
 
-                // ECC
 
-                Tests.analyzeAfterECCError(sbECC.toString(), mode);
-
-                // ------------------------------------------------------------------------------ //
-
-
-
-                // Possibly put in some sort of threshold here or something
-                // to drop out and erase samples if there is a false positive.
-
-                resetState();
-                break;
+            // Possibly put in some sort of threshold here or something
+            // to keep from getting re-triggered by the end of the frame
+            //a_data.eat(4096);
         }
     }
 
@@ -245,7 +206,7 @@ class Demodulator implements Runnable{
         for(int i = 0; i < thresholds.size(); i++){
             threshArray[i] = thresholds.get(i);
         }
-        Library.writeToFile("thresh.bin", Library.doubleArray2ByteArray(threshArray));
+        Library.writeToFile("thresh.bin", Library.doubleArray2IntByteArray(threshArray));
         */
         String bitsA = sb.toString();
         return bitsA;
@@ -263,7 +224,7 @@ class Demodulator implements Runnable{
         // Take ABS value (to get amplitudes)
         // convert to double in one step
         int[] amp = abs(fftData, fftData.length / 2);
-        Library.writeToFile("abs.bin", Library.intArray2ByteArray(amp));
+        //Library.writeToFile("abs.bin", Library.intArray2ByteArray(amp));
 
         final int ALPHA = 2;
         final int BETA = 10;
@@ -313,7 +274,7 @@ class Demodulator implements Runnable{
         for(int i = 0; i < thresholds.size(); i++){
             threshArray[i] = thresholds.get(i);
         }
-        Library.writeToFile("thresh.bin", Library.doubleArray2ByteArray(threshArray));
+        Library.writeToFile("thresh.bin", Library.doubleArray2IntByteArray(threshArray));
         */
         String bitsA = sb.toString();
 
@@ -322,7 +283,7 @@ class Demodulator implements Runnable{
         // The actual decoding / interpreting the signals --------------------------------------- //
         // ---- PHASE ----
         double[] phase = angle(fftData, fftData.length / 2);
-        Library.writeToFile("angle.bin", Library.doubleArray2ByteArray(phase));
+        //Library.writeToFile("angle.bin", Library.doubleArray2IntByteArray(phase));
 
 
         // Find precise sub-sample offset
@@ -331,7 +292,7 @@ class Demodulator implements Runnable{
         double minDiff = Double.MAX_VALUE;
         double offset = 0;
 
-        for(double virtualI = -10; virtualI < 10; virtualI = virtualI + 0.01){
+        for(double virtualI = -10; virtualI < 0; virtualI = virtualI + 0.01){
             double diff = Math.abs(SC1.calcVirtualPhase(virtualI) - SC2.calcVirtualPhase(virtualI));
             if(diff < minDiff){
                 minDiff = diff;
@@ -341,19 +302,27 @@ class Demodulator implements Runnable{
         //Log.d(TAG, "Original angle at CS1 (bin433): " + phase[433]);
         //Log.d(TAG, "0:" + SC1.calcVirtualPhase(0) + "  2: " + SC1.calcVirtualPhase(2));
         //Log.d(TAG, "0:" + SC2.calcVirtualPhase(0) + "  2: " + SC2.calcVirtualPhase(2));
-        //Log.d(TAG, "minDiff: " + minDiff + "   located at virtual index offset: " + offset);
+        Log.d(TAG, "minDiff: " + minDiff + "   located at virtual index offset: " + offset);
 
 
         // Decode the phases
         sb = new StringBuffer();
         double cur;
 
+        double[] orig = new double[234];
+        double[] corr = new double[234];
+
         // setup angle reading for sub-carrier 1
         CalibrationSubCarrier cal = new CalibrationSubCarrier(SubCarrier.CAL_1_FREQ, phase[433]);
         double calibratedOne = cal.calcVirtualPhase(offset);
         double f = Library.findStartingF();
+        int j = 0;
         for(int i = startIdx; i < 487; i++){
+            orig[j] = phase[i];
             cur = SubCarrier.calcVirtualPhase(f, phase[i], offset);
+            corr[j] = cur;
+            j++;
+
             //Log.d(TAG, "f: " + f + "   Original angle reading: " + phaseArr[i] +  "   adjusted: " + cur);
             f = f + Library.SubCarrier_DELTA;
 
@@ -381,6 +350,9 @@ class Demodulator implements Runnable{
             }
         }
         String bitsP = sb.toString();
+        //Library.writeToFile("orig_p.bin", Library.doubleArray2IntByteArray(orig));
+        //Library.writeToFile("corr_p.bin", Library.doubleArray2IntByteArray(corr));
+
 
         String bits = zip(bitsA, bitsP); // Just a simple interleave
         return bits;
@@ -403,7 +375,7 @@ class Demodulator implements Runnable{
         // known will be at searchLen and the left edge of the
         // known will be at searchLen - known.length
         for(int winOffset = 0; winOffset < data.length-known.length; winOffset++) {
-            double xcorr = crossCorr(known, data, winOffset);
+            double xcorr = correlation(known, data, winOffset);
             xcorrData[winOffset] = xcorr;
             //Log.d(TAG, "xcorr: " + xcorr);
         }
@@ -432,7 +404,7 @@ class Demodulator implements Runnable{
     // calculate the correlation between data and the items array at the given offset
     // Offset is samples from the front of the queue (samples from takeIndex)
     //http://stackoverflow.com/questions/23610415/time-delay-of-sound-files-using-cross-correlation
-    private double crossCorr(short[] known, short[] data, int offSet) {
+    private double correlation(short[] known, short[] data, int offSet) {
         // This function assumes that the data will be there in both data and items
         // Be sure that there are enough samples built it before calling this method
         // or you will get an exception!
@@ -486,39 +458,6 @@ class Demodulator implements Runnable{
         }
         //Log.d(TAG, "phase[432]:  " + output[432]);
         return output;
-    }
-
-
-    private int incState(){
-        Log.d(TAG, "Transitioning from: " + STATE + " to: " + (STATE+1));
-        STATE++;
-        if(STATE > STATE_DECODING){
-            throw new IllegalStateException("Cannot increment past " + STATE_DECODING + " (DECODING)");
-        }
-        else{
-            transitionTS = System.currentTimeMillis();
-        }
-        return STATE;
-    }
-
-
-    private int decState(){
-        Log.d(TAG, "Transitioning from: " + STATE + " to: " + (STATE-1));
-        STATE--;
-        if(STATE < STATE_LISTENING){
-            throw new IllegalStateException("Cannot decrement past " + STATE_LISTENING + " (PRE");
-        } else {
-            transitionTS = System.currentTimeMillis();
-        }
-        return STATE;
-    }
-
-
-    private int resetState(){
-        Log.d(TAG, "Transitioning from: " + STATE + " to: " + STATE_LISTENING);
-        STATE = STATE_LISTENING;
-        transitionTS = System.currentTimeMillis();
-        return STATE;
     }
 
 
