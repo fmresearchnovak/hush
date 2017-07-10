@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -43,10 +44,10 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".TestEnergy"
-            android:label="@string/title_activity_test_energy"></activity>
+            android:label="@string/title_activity_test_energy" />
         <activity
             android:name=".ItemSelector"
-            android:label="@string/title_activity_bluetooth_device_selector"></activity>
+            android:label="@string/title_activity_bluetooth_device_selector" />
         <activity
             android:name=".TestEnergyServer"
             android:label="@string/title_activity_test_energy_server">
@@ -61,6 +62,7 @@
                     android:scheme="vnd.android.nfc" />
             </intent-filter>
         </activity>
+        <activity android:name=".SPSTestActivity"></activity>
     </application>
 
 </manifest>

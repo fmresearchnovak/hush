@@ -11,5 +11,9 @@
         android:title="Switch Mode"
         app:showAsAction="never" />
 
+    <item android:id="@+id/SPSTest"
+        android:title="Samples / Second Test"
+        app:showAsAction="never" />
+
 
 </menu>

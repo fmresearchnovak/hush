@@ -101,8 +101,8 @@
 	<Button
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Generate Distance Test Signal"
-		android:onClick="genDistanceSignal" />
+		android:text="Generate Test Signal"
+		android:onClick="genTestSignal" />
     
 </LinearLayout>
 </ScrollView>

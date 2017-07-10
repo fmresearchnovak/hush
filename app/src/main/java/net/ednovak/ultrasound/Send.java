@@ -134,11 +134,11 @@ public class Send extends AppCompatActivity {
         Log.d(TAG, "Creating " + numFrames + " frames");
         audio = new ArrayList<Short>(Library.HAIL_SIZE + (Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2)) * numFrames);
 
-        // Little experiment for samsung phones, add a bunch of silence at the front
+        // Little experiment for samsung phones, add something at the front
 
-        //for(int i = 0; i < Library.FOOTER_SIZE; i++) {
-        //    audio.add((short)0);
-        //}
+        for(int i = 0; i < Library.FOOTER_SIZE*2; i++) {
+            audio.add((short)0);
+        }
 
         // ---- Header -------------------------------------------------------------------------- //
         short[] hail = Library.makeHail(Library.HAIL_TYPE_SWEEP);
@@ -378,6 +378,12 @@ public class Send extends AppCompatActivity {
             SubCarrier freq = new SubCarrier(curF, phase, amp);
             map.add(freq);
             curF += (Library.SubCarrier_DELTA);
+
+            // Add the decimal portion of PI to the phase.  This "spread" the phases out so that the sub-carriers do not
+            // perform destructive interference with one another.
+            // I added this because I noticed long range mode had worse error than short range mode's amplitude
+            // Also it was noisy (probably because of interference as well).
+            phase = (phase + 0.14) % (Math.PI * 2);
         }
         return map;
     }
@@ -404,18 +410,49 @@ public class Send extends AppCompatActivity {
         Library.writeToFile("bits.bin", bits.getBytes());
     }
 
-    public void genDistanceSignal(View v){
-        short[] output = Tests.distanceTest();
+    public void genTestSignal(View v){
 
-        audio = new ArrayList<Short>((int)(Library.SAMPLE_RATE*3));
+        SubCarrier sc = new SubCarrier(2000, 0, 1.0, false);
 
+        // ---- Create the actual audio data from this sub-carrier ----------------------------- //
+        double[] signal = new double[(int)(Library.SAMPLE_RATE*1)];
+        sc.addTo(signal);
+        Log.d(TAG, "signal.length: " + signal.length);
+
+        // Amplify (scale to full volume)
+        double localMax = (Library.MAXIMUM );
+        short[] output = new short[signal.length];
+        double tmp;
+        for(int i = 0; i < signal.length; i++){
+            tmp = signal[i] * localMax;
+            output[i] = Library.double2Short(tmp);
+        }
+
+
+        double[] signal2 = new double[(int)(Library.SAMPLE_RATE*1)];
+        SubCarrier sc2 = new SubCarrier(1000, 0, 1.0, false);
+        sc2.addTo(signal2);
+        Log.d(TAG, "signal.length: " + signal2.length);
+        localMax = Library.MAXIMUM;
+        short[] output2 = new short[signal2.length];
+        for(int i = 0; i < signal2.length; i++){
+            tmp = signal2[i] * localMax;
+            output2[i] = Library.double2Short(tmp);
+        }
+
+
+        // This step and previous step (amplify) could be combined into one loop
+        // Put into audio ArrayList<Short> for transmission
+        audio = new ArrayList<Short>(output.length);
         // put data in there
         for (int i = 0; i < output.length; i++) {
             audio.add(output[i]);
         }
+        for(int i = 0; i < output2.length; i++){
+            audio.add(output2[i]);
+        }
 
     }
-
 
 
     // Plays the sound stored in audio
@@ -474,6 +511,7 @@ public class Send extends AppCompatActivity {
 
         protected void onProgressUpdate(Integer... prog){
             int p = prog[0];
+            //Log.d(TAG, "playing: " + p);
             super.onProgressUpdate(p);
             pb.setProgress(p);
         }

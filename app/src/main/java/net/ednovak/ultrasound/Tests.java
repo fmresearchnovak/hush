@@ -335,30 +335,6 @@ public final class Tests {
         Log.d(TAG, "This is just a test!");
     }
 
-    public static short[] distanceTest(){
-
-        SubCarrier sc = new SubCarrier(18217, 0, 1.0, false);
-
-        // ---- Create the actual audio data from this sub-carrier ----------------------------- //
-        double[] signal = new double[(int)(Library.SAMPLE_RATE*3)];
-        sc.addTo(signal);
-        Log.d(TAG, "signal.length: " + signal.length);
-
-        // Amplify (scale to full volume)
-        final double localMax = (Library.MAXIMUM );
-        short[] output = new short[signal.length];
-        double tmp;
-        for(int i = 0; i < signal.length; i++){
-            tmp = signal[i] * localMax;
-            output[i] = Library.double2Short(tmp);
-        }
-
-
-        return output;
-
-
-    }
-
     public static String eccErrorGen(int numberOfError, String orginalString){
 
         StringBuilder errorString = new StringBuilder(orginalString);

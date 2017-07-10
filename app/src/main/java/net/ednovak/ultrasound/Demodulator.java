@@ -79,7 +79,7 @@ class Demodulator implements Runnable{
 
         double c = correlation(hail, preChunk, 0);
 
-        if(Math.abs(c) < 0.50){
+        if(Math.abs(c) < 0.5){
             a_data.eat(10); // No packet here, skip forward
         } else {
 
@@ -292,7 +292,7 @@ class Demodulator implements Runnable{
         double minDiff = Double.MAX_VALUE;
         double offset = 0;
 
-        for(double virtualI = -10; virtualI < 0; virtualI = virtualI + 0.01){
+        for(double virtualI = -10; virtualI < 2; virtualI = virtualI + 0.01){
             double diff = Math.abs(SC1.calcVirtualPhase(virtualI) - SC2.calcVirtualPhase(virtualI));
             if(diff < minDiff){
                 minDiff = diff;
@@ -394,7 +394,7 @@ class Demodulator implements Runnable{
             }
         }
 
-        int ans = maxIdx - 0;
+        int ans = maxIdx;
         return ans;
     }
 
@@ -483,7 +483,7 @@ class Demodulator implements Runnable{
         // The mic might output minBSize in one go, so it's a good idea to have
         // room for at least twice that (in case it gets called again before any
         // data can be removed)
-        return (int)Library.SAMPLE_RATE * 2; // 2 seconds of space
+        return (int)Library.SAMPLE_RATE * 2; // 10 seconds of space
     }
 
 

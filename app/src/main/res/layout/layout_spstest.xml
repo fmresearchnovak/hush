@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="net.ednovak.ultrasound.SPSTestActivity">
+
+    <TextView android:id="@+id/spstest_tv_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:text="This activity tests the samples per second to approximate the sample rate.\n\nSee logcat for output..."
+        android:layout_centerInParent="true"/>
+
+</RelativeLayout>

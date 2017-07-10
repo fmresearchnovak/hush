@@ -93,6 +93,10 @@ public class Home extends AppCompatActivity {
                 updateUIMode();
                 break;
 
+			case R.id.SPSTest:
+				i = new Intent(this, SPSTestActivity.class);
+				startActivity(i);
+
 			default:
 				return super.onOptionsItemSelected(item);
 		}
