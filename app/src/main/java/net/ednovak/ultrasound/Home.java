@@ -55,8 +55,7 @@ public class Home extends AppCompatActivity {
 
 		Log.d(TAG, "Ultrasound App Running!");
 
-        //Tests.staticFFTTest();
-        //Tests.newFFTTest();
+        //Tests.testAudioBlockingList();
 	}
 
 	@Override
@@ -134,7 +133,6 @@ public class Home extends AppCompatActivity {
 
             signal.clearAnimation();
             signal.setVisibility(View.INVISIBLE);
-
 		}
 	}
 
@@ -148,6 +146,7 @@ public class Home extends AppCompatActivity {
 		dataBuffer = new BlockingAudioList(Demodulator.getMinQueueSize());
 
 		MicRunnable producer = new MicRunnable(dataBuffer);
+		producer.setHostActivity(this);
 		Demodulator consumer = new Demodulator(dataBuffer, mode);
 
 		pThread = new Thread(producer, "Audio Recording Thread");

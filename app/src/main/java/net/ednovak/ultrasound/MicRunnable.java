@@ -1,9 +1,11 @@
 package net.ednovak.ultrasound;
 
+import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +34,12 @@ class MicRunnable implements Runnable{
     ArrayList<Short> rmsCache = new ArrayList<Short>(RMS_WINDOW*2);
     public Chart c = null;
 
+
+    // To approximate sample rate
+    private int sampleCounter;
+    private long startTime;
+    private Activity host;
+
     public MicRunnable(BlockingAudioList<Short> newData){
         super();
         a_data = newData;
@@ -40,6 +48,7 @@ class MicRunnable implements Runnable{
 
     public void run(){
         Log.d(TAG, "Recorder (producer) started!");
+        resetCounters();
         running = true;
         ar = new AudioRecord(MediaRecorder.AudioSource.MIC, (int)Library.SAMPLE_RATE,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, minBSize*2);
@@ -52,6 +61,10 @@ class MicRunnable implements Runnable{
             Log.d(TAG, "Could not ar.startRecording()!");
             running = false; // don't try to record, just exit
         }
+
+        int s;
+        long dt;
+        double rate;
         while(running) {
             //Log.d(TAG, "Mic Runnable iteration");
             // Check if we're interrupted
@@ -62,7 +75,17 @@ class MicRunnable implements Runnable{
                 break;
             }
 
-            readMic(ar, audioBuffer);
+            if (startTime == 0){
+                startTime = System.currentTimeMillis();
+            }
+            s = readMic(ar, audioBuffer);
+            sampleCounter = sampleCounter + s;
+            dt = System.currentTimeMillis() - startTime;
+            rate = (sampleCounter / (dt / 1000.00));
+            show(rate);
+            if(dt > 10000){ // 10000ms = 10 seconds
+                resetCounters();
+            }
             //Log.d(TAG, "Inserted.  Remaining space: " + q.remainingCapacity());
         }
         // I may want to release if I never enter the loop
@@ -73,7 +96,7 @@ class MicRunnable implements Runnable{
 
 
     // Method of the runnable because it is only called inside this (the Audio Recording) thread)
-    private void readMic(AudioRecord ar, short[] buff) {
+    private int readMic(AudioRecord ar, short[] buff) {
         int a = ar.read(buff, 0, buff.length); // This should be a blocking call
         if(a>0) {
             boolean resp;
@@ -83,7 +106,7 @@ class MicRunnable implements Runnable{
                 if(!resp){
                     Log.d(TAG, "BlockingAudioList is full!  Shutting down producer");
                     Thread.currentThread().interrupt();
-                    return;
+                    return a;
                 }
 
                 // Plot RMS if c is set
@@ -95,6 +118,12 @@ class MicRunnable implements Runnable{
                 }
             }
         }
+        return a;
+    }
+
+    private void resetCounters(){
+        startTime = 0;
+        sampleCounter = 0;
     }
 
     private void plotRMSPoint(){
@@ -129,5 +158,23 @@ class MicRunnable implements Runnable{
             e3.printStackTrace();
             return;
         }
+    }
+
+
+    public void setHostActivity(Activity newA){
+        host = newA;
+    }
+
+    private void show(final double val){
+        if(host == null){
+            return;
+        }
+        host.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView tv = (TextView)host.findViewById(R.id.home_tv_rate);
+                tv.setText("Sample Rate: " + String.format("%5.3f", val) + "Hz");
+            }
+        });
     }
 }

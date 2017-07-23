@@ -408,4 +408,72 @@ public final class Tests {
             return true;
         }
     }
+
+    public static void testAudioBlockingList(){
+        final BlockingAudioList<Short> data = new BlockingAudioList<Short>(12);
+
+        Thread producer = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                Short c = 0;
+                boolean resp;
+                while(true){
+                    Log.d(TAG, "Inserting...");
+                    resp = data.offer(c++);
+                    if(!resp){
+                        Log.d(TAG, "List is full!  Cannot insert!");
+                    }
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e){};
+                }
+            }
+        });
+
+        Thread consumer = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true){
+                    try {
+                        Log.d(TAG, "eating...");
+                        data.eat(1);
+                        Thread.sleep(2500);
+                    }
+                    catch(InterruptedException e){}
+                }
+            }
+        });
+
+        Thread shower = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                short[] tmp;
+                StringBuilder sb;
+                while(true){
+                    sb = new StringBuilder(data.size()*2);
+                    sb.append(data.size() + " ");
+                    try{
+                        if(data.size() == 0){
+                            Log.d(TAG, "[]");
+                            Thread.sleep(400);
+                            continue;
+                        }
+                        tmp = data.slice(0, data.size()+1);
+                        sb.append("[");
+                        for(int i = 0; i < tmp.length; i++){
+                            sb.append(tmp[i] + ",");
+                        }
+                        sb.deleteCharAt(sb.length()-1);
+                        sb.append("]");
+                        Log.d(TAG, sb.toString());
+                        Thread.sleep(400);
+                    } catch (InterruptedException e){};
+                }
+            }
+        });
+
+        producer.start();
+        consumer.start();
+        shower.start();
+    }
 }

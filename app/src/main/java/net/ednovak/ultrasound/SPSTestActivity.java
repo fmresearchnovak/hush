@@ -1,5 +1,6 @@
 package net.ednovak.ultrasound;
 
+import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -18,6 +19,8 @@ public class SPSTestActivity extends AppCompatActivity {
             AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
     private int sampleCounter = 0;
     private long startTime = 0;
+
+    private Activity host = null;
 
 
 
