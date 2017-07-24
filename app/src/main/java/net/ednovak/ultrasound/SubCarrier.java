@@ -52,9 +52,12 @@ public class SubCarrier {
         a = newA;
     }
 
-    public void addTo(double[] someSig){
+    public void addTo(double[] someSig, int offset){
+        // This offset is used to delay the signal so that the "true" starting point
+        // the wave at sample index 0, occurs at the section of the data frame that
+        // I want.  This is necessary because of the noise reducing window.
         for(int i = 0; i < someSig.length; i++){
-            someSig[i] = someSig[i] + getSample(i);
+            someSig[i] = someSig[i] + getSample(i + offset);
         }
     }
 

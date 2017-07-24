@@ -77,8 +77,8 @@ public final class Tests {
         SubCarrier s2 = new SubCarrier(18040, 0, 1, false);
 
         double[] tmpSignal = new double[Library.DATA_FRAME_SIZE];
-        s1.addTo(tmpSignal);
-        s2.addTo(tmpSignal);
+        s1.addTo(tmpSignal, 0);
+        s2.addTo(tmpSignal, 0);
 
         // Copy to short array
         short[] signal = new short[tmpSignal.length];
@@ -104,7 +104,7 @@ public final class Tests {
 		double[] signal = new double[l];
 		Complex[] testD = new Complex[l];
 		SubCarrier f = new SubCarrier(18000, Math.PI, Library.AMP_HIGH);
-		f.addTo(signal);
+		f.addTo(signal, 0);
 
 		for(int i = 0; i < l; i++){
 			testD[i] = new Complex(signal[i], 0);
@@ -184,7 +184,7 @@ public final class Tests {
     public static void FFTSinTest(){
         SubCarrier s = new SubCarrier(387, 0, 1, false);
         double[] tmp = new double[1024];
-        s.addTo(tmp);
+        s.addTo(tmp, 0);
 
         short[] signal = new short[1024];
         for(int i = 0; i < signal.length; i++){

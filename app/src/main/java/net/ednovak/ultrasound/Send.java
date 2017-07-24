@@ -226,10 +226,9 @@ public class Send extends AppCompatActivity {
 
         // ---- Create the actual audio data from this sub-carrier mapping ---------------------- //
         double[] signal = new double[Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE*2)];
-
         for(int i = 0; i < map.size(); i++){
             SubCarrier sc = map.get(i);
-            sc.addTo(signal);
+            sc.addTo(signal, -Library.RAMP_SIZE);
         }
 
         // Amplify (scale to full volume)
@@ -416,7 +415,7 @@ public class Send extends AppCompatActivity {
 
         // ---- Create the actual audio data from this sub-carrier ----------------------------- //
         double[] signal = new double[(int)(Library.SAMPLE_RATE*1)];
-        sc.addTo(signal);
+        sc.addTo(signal, 0);
         Log.d(TAG, "signal.length: " + signal.length);
 
         // Amplify (scale to full volume)
@@ -431,7 +430,7 @@ public class Send extends AppCompatActivity {
 
         double[] signal2 = new double[(int)(Library.SAMPLE_RATE*1)];
         SubCarrier sc2 = new SubCarrier(1000, 0, 1.0, false);
-        sc2.addTo(signal2);
+        sc2.addTo(signal2, 0);
         Log.d(TAG, "signal.length: " + signal2.length);
         localMax = Library.MAXIMUM;
         short[] output2 = new short[signal2.length];

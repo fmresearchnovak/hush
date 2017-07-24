@@ -72,16 +72,23 @@ class Demodulator implements Runnable{
 
     private void readQueue() throws InterruptedException{
 
-        short[] preChunk = a_data.slice(50, 351);  // I could try a larger range
+        short[] preChunk = a_data.slice(50, 150);  // I could try a larger range
 
-        // Too heavy for samsung phone
-        //preChunk = Library.FIR(preChunk);
+        // Fast enough for all phones, kind of a lot of false positives
+        // interesting result; my mouse click has a distinct and strong ultrasound signal!
+        preChunk = Library.FIR(preChunk);
+        double rms = Library.RMS(0, preChunk.length, preChunk);
+        //Log.d(TAG, "rms: " + rms);
 
-        double c = correlation(hail, preChunk, 0);
+        // needs fixing still.  Too slow for samsung phone
+        // double c = correlation(hail, preChunk, 0);
 
-        if(Math.abs(c) < 0.5){
-            a_data.eat(10); // No packet here, skip forward
+
+        if(rms < 500){
+            a_data.eat(50); // No packet here, skip forward a bunch
+
         } else {
+            Log.d(TAG, "Detected packet  rms: " + rms);
 
             // This means we've found the hail signal and we need to decode_short the subsequent data
             // of this packet
@@ -105,11 +112,15 @@ class Demodulator implements Runnable{
             // Eat Hail and first ramp (before first frame)
             //Log.d(TAG, "EATING: " + startGuess);
             a_data.eat(startGuess);
+            Log.d(TAG, "Ate: " + startGuess);
 
             StringBuilder sb = new StringBuilder();
             StringBuilder sbECC = new StringBuilder();
 
-            //Test
+            // Eat the beginning ramp before the first frame
+            a_data.eat(Library.RAMP_SIZE);
+            Log.d(TAG, "Ate: " + Library.RAMP_SIZE);
+
             for(int i = 0; i < numFrames; i++) {
                 Log.d(TAG, "Decoding frame: " + i);
                 short[] frame = a_data.slice(0, Library.DATA_FRAME_SIZE+1);
@@ -127,6 +138,7 @@ class Demodulator implements Runnable{
                 // Eat this frame and the ending ramp and the starting ramp of the next frame
                 //Log.d(TAG, "EATING " + (Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2)));
                 a_data.eat(Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE * 2));
+                Log.d(TAG, "Ate: " + (Library.DATA_FRAME_SIZE + (Library.RAMP_SIZE *2)));
             }
 
             String binary = sb.toString();
