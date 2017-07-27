@@ -164,6 +164,7 @@ public class Send extends AppCompatActivity {
             Log.d(TAG, "Frame " + i + " containing " +  String.valueOf(curFrameBinary.length()) + " bits.");
 
             //ECC implementation
+            Log.d(TAG, "curFrameBinary: " + curFrameBinary);
             String eccImplementedString = ECC.eccImplementation(curFrameBinary, parityBitsPerFrame);
 
             //Log.d(TAG, "Original binary: " + curFrameBinary);
@@ -177,19 +178,19 @@ public class Send extends AppCompatActivity {
 
 
         // ---- Quieting Footer ----------------------------------------------------------------- //
-        /*
+
         SubCarrier sc = new SubCarrier(21000, 0, 1, false);
         double[] footer = new double[Library.FOOTER_SIZE];
-        sc.addTo(footer);
+        sc.addTo(footer, 0);
         double ampDelta = 1.0 / (double)Library.FOOTER_SIZE;
-        double newAmp = 1;
+        double newAmp = 0.2;
         for(int i = 0; i < Library.FOOTER_SIZE; i++){
             short val = Library.double2Short(footer[i] * (newAmp * Library.MAXIMUM));
             audio.add(val);
             newAmp = newAmp - ampDelta;
         }
         // -------------------------------------------------------------------------------------- //
-        */
+
 
         // Done, print some debug stuff
         Log.d(TAG, "Total length in samples: " + audio.size());
@@ -371,18 +372,19 @@ public class Send extends AppCompatActivity {
                 curF += Library.SubCarrier_DELTA;
             }
             // Ternary operator
-            amp = binary.charAt(i) == '1' ? Library.AMP_HIGH : Library.AMP_LOW;
+            amp = binary.charAt(i) == '1' ? Library.AMP_HIGH : 0;
+            // Phase also encodes the same bit (basically a clever way to get random phases)
+            phase = binary.charAt(i) == '1' ? Math.PI : 0;
 
             Log.d(TAG, "f: " + String.format("%.3f", curF) + "   amp: " + amp + "   phase: " + phase);
             SubCarrier freq = new SubCarrier(curF, phase, amp);
             map.add(freq);
             curF += (Library.SubCarrier_DELTA);
 
-            // Add the decimal portion of PI to the phase.  This "spread" the phases out so that the sub-carriers do not
+            // Add the decimal portion of PI to the phase.  This "spreads" the phases out so that the sub-carriers do not
             // perform destructive interference with one another.
             // I added this because I noticed long range mode had worse error than short range mode's amplitude
             // Also it was noisy (probably because of interference as well).
-            phase = (phase + 0.14) % (Math.PI * 2);
         }
         return map;
     }

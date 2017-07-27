@@ -237,9 +237,17 @@ public final class Tests {
     }
 
 
-    private static void analyzeErrorLong(String binary){
-        String gndTruth = Tests.test202;
-
+    private static void analyzeErrorLong(String binary, int mode){
+        String data = Library.getRandomBits(202);
+        String size = Library.genSizeField(202, mode);
+        String eccIn = size + data;
+        String eccOut = "";
+        for(int i = 0; i < 3; i++){
+            String batch = eccIn.substring(i*70, ((i+1) * 70));
+            String tmp = ECC.eccImplementation(batch, 7);
+            eccOut = eccOut + tmp;
+        }
+        String gndTruth = eccOut;
 
         // Amplitude analysis
         Library.printErrorAnalysis(binary, gndTruth);
@@ -251,7 +259,7 @@ public final class Tests {
 
 
         if(mode == MODE_LONG){
-            analyzeErrorLong(binary);
+            analyzeErrorLong(binary, mode);
             return;
         }
 
@@ -260,8 +268,23 @@ public final class Tests {
         String bitsA = unzipped[0];
         String bitsP = unzipped[1];
 
-        // unzip ground truth
-        String gndTruth =  Tests.test431;
+        // Generate ground truth
+        // 431 maximum number of data bits (not counting size field and ecc bits) / packet
+        String data = Library.getRandomBits(431);
+        String size = Library.genSizeField(431, mode);
+        String eccIn = size + data;
+        String eccOut = "";
+        for(int i = 0; i < 3; i++){
+            // 147 = number of bits in each frame
+            String batch = eccIn.substring(i*147, ((i+1)*147));
+            //Log.d(TAG, "Batch: " + batch);
+            // 8 = parity bits in each frame
+            String tmp = ECC.eccImplementation(batch, 8);
+            eccOut = eccOut + tmp;
+            //Log.d(TAG, "ECC part:" + tmp);
+        }
+
+        String gndTruth =  eccOut;
         String[] gndUnzipped = unzip(gndTruth);
         String gndA = gndUnzipped[0];
         String gndP = gndUnzipped[1];

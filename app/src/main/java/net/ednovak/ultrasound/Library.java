@@ -184,7 +184,7 @@ public class Library {
         Calendar calendar = Calendar.getInstance();
         //int hrSeed = calendar.get(Calendar.HOUR);
         // Random selected but CONSTANT seed (constant across all devices)
-        Random r = new Random(77);
+        Random r = new Random(calendar.get(Calendar.MINUTE));
     	while(sb.length() < l){
     		sb.append((String.valueOf(r.nextInt(2))));
     	}
@@ -610,17 +610,6 @@ public class Library {
         return sb.toString();
     }
 
-    public static double errPer(String errString){
-        double sum = 0;
-        for(int i = 0; i < errString.length(); i++){
-            if(errString.charAt(i) == '1'){
-                sum++;
-            }
-        }
-        double per = (sum / errString.length()) * 100;
-        return per;
-    }
-
     public static int getL(int mode){
         int l = 0;
         if(mode == Library.MODE_SHORT){
@@ -730,6 +719,22 @@ public class Library {
 
     }
 
+    public static int errCnt(String errString){
+        int cnt = 0;
+        for(int i = 0; i < errString.length(); i++){
+            if(errString.charAt(i) == '1'){
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+
+    public static double errPer(String errString){
+        double sum = (double)errCnt(errString);
+        double per = (sum / errString.length()) * 100;
+        return per;
+    }
+
 
     public static void printErrorAnalysis(String rec, String gnd){
         String err = Library.getErrors(rec, gnd);
@@ -738,6 +743,6 @@ public class Library {
         Log.d(TAG, "err : " + err);
         String locations = Library.getErrorLocations(rec, gnd);
         Log.d(TAG, "Errors at: " + locations);
-        Log.d(TAG, "Error Percentage: " + String.format("%2.4f",Library.errPer(err)) + "%");
+        Log.d(TAG, errCnt(err) + " / " + err.length() + " Errors.  Percentage: " + String.format("%2.4f",Library.errPer(err)) + "%");
     }
 }

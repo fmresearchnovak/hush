@@ -152,7 +152,7 @@ class Demodulator implements Runnable{
 
             // Possibly put in some sort of threshold here or something
             // to keep from getting re-triggered by the end of the frame
-            //a_data.eat(4096);
+            a_data.eat(4096);
         }
     }
 
@@ -167,7 +167,7 @@ class Demodulator implements Runnable{
         // ---- AMPLITUDE ----
         // Take ABS value (to get amplitudes)
         int[] amp = abs(fftData, fftData.length / 2);
-        Library.writeToFile("abs.bin", Library.intArray2ByteArray(amp));
+        //Library.writeToFile("abs.bin", Library.intArray2ByteArray(amp));
 
         final int ALPHA = 2;
         final int BETA = 10;
@@ -374,7 +374,7 @@ class Demodulator implements Runnable{
     // Dr. Novak
     // Find hail signal in this data
     private int findHail(short[] data) {
-        // This function is kind of heavy and should not be done frequently.ß
+        // This function is kind of heavy and should not be done frequently.
 
         // Look for header with xcorr
         // Make hail signal (known / ground truth)
